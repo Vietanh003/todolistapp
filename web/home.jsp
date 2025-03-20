@@ -19,4 +19,4 @@
             <a href="logout" class="logout">Đăng xuất</a>
         </div>
     </body>
-</html>
+</html
