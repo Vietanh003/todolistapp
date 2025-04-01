@@ -8,6 +8,35 @@ import util.DBConnection;
 
 public class CategoryDAO {
 
+    // Class nội bộ để lưu trữ mã danh mục và tên danh mục
+    public static class CategoryIdAndName {
+        private int madanhmuc;
+        private String ten;
+
+        // Constructor
+        public CategoryIdAndName(int madanhmuc, String ten) {
+            this.madanhmuc = madanhmuc;
+            this.ten = ten;
+        }
+
+        // Getters và Setters
+        public int getMadanhmuc() {
+            return madanhmuc;
+        }
+
+        public void setMadanhmuc(int madanhmuc) {
+            this.madanhmuc = madanhmuc;
+        }
+
+        public String getTen() {
+            return ten;
+        }
+
+        public void setTen(String ten) {
+            this.ten = ten;
+        }
+    }
+
     // Lấy danh sách danh mục của người dùng
     public List<Category> getCategories(int userId) {
         List<Category> categories = new ArrayList<>();
@@ -31,6 +60,29 @@ public class CategoryDAO {
             e.printStackTrace();
         }
         return categories;
+    }
+
+    // Lấy danh sách mã danh mục và tên danh mục của người dùng
+    public List<CategoryIdAndName> getCategoryIdsAndNames(int userId) {
+        List<CategoryIdAndName> categoryList = new ArrayList<>();
+        String sql = "{CALL GetCategories(?)}";
+
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int madanhmuc = rs.getInt("MADANHMUC");
+                String ten = rs.getString("TEN");
+                categoryList.add(new CategoryIdAndName(madanhmuc, ten));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categoryList;
     }
 
     // Thêm danh mục

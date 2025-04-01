@@ -1,0 +1,27 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <button class="btn btn-light me-2" id="toggleSidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand fw-bold" href="#">ToPlan</a>
+        <div class="dropdown mx-3">
+            <button class="btn btn-light dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown">
+                Danh mục công việc
+            </button>
+            <ul class="dropdown-menu" id="category-list">
+                <li><a class="dropdown-item text-muted">Đang tải...</a></li>
+            </ul>
+        </div>
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                <img src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle me-2" width="40" height="40">
+                <span></span> 
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">🔧 Chỉnh sửa thông tin</a></li>
+                <li><a class="dropdown-item text-danger" href="logout">🚪 Đăng xuất</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
