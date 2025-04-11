@@ -1,18 +1,21 @@
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class User {
-    private int maNguoiDung; // MANGUOIDUNG
-    private String email; // EMAIL
-    private String matKhau; // MATKHAU
-    private String tenNguoiDung; // TENNGUOIDUNG
-    private Date ngayTao; // NGAYTAO
-    private String duongDanAnhDaiDien; // DUONGDANANHDAIDIEN
+    private int maNguoiDung;
+    private String email;
+    private String matKhau;
+    private String tenNguoiDung;
+    private Timestamp ngayTao;
+    private String duongDanAnhDaiDien;
 
-    // Constructor đầy đủ
-    public User(int maNguoiDung, String email, String matKhau, String tenNguoiDung, 
-                Date ngayTao, String duongDanAnhDaiDien) {
+    // Constructor không tham số (thêm vào để sửa lỗi)
+    public User() {
+    }
+
+    // Constructor với 6 tham số (đã có)
+    public User(int maNguoiDung, String email, String matKhau, String tenNguoiDung, Timestamp ngayTao, String duongDanAnhDaiDien) {
         this.maNguoiDung = maNguoiDung;
         this.email = email;
         this.matKhau = matKhau;
@@ -21,7 +24,7 @@ public class User {
         this.duongDanAnhDaiDien = duongDanAnhDaiDien;
     }
 
-    // Constructor dùng cho đăng ký (không cần maNguoiDung và ngayTao vì tự động sinh)
+    // Constructor với 3 tham số (đã có, có thể từ phương thức registerUser)
     public User(String email, String matKhau, String tenNguoiDung) {
         this.email = email;
         this.matKhau = matKhau;
@@ -61,11 +64,11 @@ public class User {
         this.tenNguoiDung = tenNguoiDung;
     }
 
-    public Date getNgayTao() {
+    public Timestamp getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(Date ngayTao) {
+    public void setNgayTao(Timestamp ngayTao) {
         this.ngayTao = ngayTao;
     }
 

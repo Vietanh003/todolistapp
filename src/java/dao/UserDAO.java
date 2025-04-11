@@ -1,5 +1,5 @@
 package dao;
-
+import java.sql.ResultSet;
 import model.User;
 import util.DBConnection;
 import java.sql.Connection;
@@ -67,4 +67,25 @@ public class UserDAO {
             return null;
         }
     }
+    
+ public User getUserInfo(int manguoidung) throws SQLException {
+    User user = null;
+    String call = "{CALL GetUserInfo(?)}";
+
+    try (var conn = DBConnection.getConnection();
+         var stmt = conn.prepareCall(call)) {
+        stmt.setInt(1, manguoidung);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            user = new User();
+            user.setMaNguoiDung(rs.getInt("MANGUOIDUNG"));
+            user.setEmail(rs.getString("EMAIL"));
+            user.setTenNguoiDung(rs.getString("TENNGUOIDUNG"));
+            user.setNgayTao(rs.getTimestamp("NGAYTAO"));
+            user.setDuongDanAnhDaiDien(rs.getString("DUONGDANANHDAIDIEN"));
+        }
+    }
+    return user;
+}
 }

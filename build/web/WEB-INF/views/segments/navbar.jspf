@@ -1,4 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!-- Thêm biến global contextPath -->
+<script>
+    window.contextPath = '${pageContext.request.contextPath}';
+</script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <button class="btn btn-light me-2" id="toggleSidebar">
@@ -13,15 +18,43 @@
                 <li><a class="dropdown-item text-muted">Đang tải...</a></li>
             </ul>
         </div>
-        <div class="dropdown ms-auto">
-            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                <img src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle me-2" width="40" height="40">
-                <span></span> 
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">🔧 Chỉnh sửa thông tin</a></li>
-                <li><a class="dropdown-item text-danger" href="logout">🚪 Đăng xuất</a></li>
-            </ul>
+        <div class="ms-auto" id="userSection">
+            <!-- Placeholder cho phần hiển thị người dùng -->
+            <div class="dropdown" id="userDropdownContainer" style="display: none;">
+                <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                    <img id="navbarAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle me-2" width="40" height="40" alt="Avatar">
+                    <span id="navbarUsername">Người dùng</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" onclick="showUserInfo(); return false;">🔧 Xem thông tin</a></li>
+                    <li><a class="dropdown-item text-danger" href="logout">🚪 Đăng xuất</a></li>
+                </ul>
+            </div>
+            <!-- Nút Đăng nhập (hiển thị nếu chưa đăng nhập) -->
+            <a href="login.jsp" class="btn btn-light" id="loginButton">Đăng nhập</a>
         </div>
     </div>
 </nav>
+
+<!-- Modal hiển thị thông tin người dùng -->
+<div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userInfoModalLabel">Thông tin tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="userInfoContent">
+                <div class="text-center">
+                    <img id="userAvatar" src="" class="rounded-circle mb-3" width="100" height="100" alt="Avatar">
+                    <h5 id="userName"></h5>
+                    <p id="userEmail" class="text-muted"></p>
+                    <p id="userCreatedAt" class="text-muted"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

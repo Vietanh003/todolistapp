@@ -60,3 +60,104 @@
     font-size: 14px;
     color: #6c757d;
 }
+   /* Tùy chỉnh giao diện chi tiết công việc */
+        .task-details .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .task-details .card-header {
+            background-color: #007bff;
+            border-bottom: none;
+            padding: 15px 20px;
+        }
+        .task-details .card-header h5 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .task-details .card-body {
+            padding: 20px;
+        }
+        .task-details .card-body h6 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+        .task-details .card-body p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+        .task-details .list-group-item {
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+        .task-details .list-group-item i {
+            font-size: 1rem;
+        }
+        .task-details .badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+        }
+        /* Tùy chỉnh nút trong modal-header */
+        .modal-header .btn-action {
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        .modal-header .btn-action:hover {
+            transform: scale(1.1);
+        }
+        .modal-header .btn-edit {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #fff;
+        }
+        .modal-header .btn-delete {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+        }
+        .modal-header .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+        .modal-header .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: scale(1.1);
+        }
+        /* Đảm bảo modal hiển thị phía trên mọi thành phần */
+        .modal.fade {
+            z-index: 1055 !important;
+        }
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+        #addCategoryModal, #addTaskModal, #taskDetailsModal, #editTaskModal {
+            z-index: 1060 !important;
+        }
+        /* Modal đẹp hơn */
+        .modal-content {
+            border-radius: 15px;
+        }
+        .modal-header {
+            background: #007bff;
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .modal-body {
+            background: #f8f9fa;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #343a40;
+        }
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+        .modal-footer {
+            border-top: none;
+        }

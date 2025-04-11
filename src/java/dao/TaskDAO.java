@@ -4,7 +4,7 @@ import model.Task;
 import model.Category;
 import model.Attachment;
 import model.ActivityLog;
-import util.DBConnection; // Thêm import cho DBConnection
+import util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +38,22 @@ public class TaskDAO {
             return stmt.getInt(12);
         }
     }
-public List<Task> getTasksOverview(int manguoidung) throws SQLException {
+
+    // Lấy danh sách công việc
+   public List<Task> getTasks(int manguoidung, Integer madanhmuc) throws SQLException {
     List<Task> tasks = new ArrayList<>();
-    String call = "{CALL GetTasksOverview(?)}";
-    
+    String call = "{CALL GetTasks(?, ?)}";
+
     try (Connection conn = DBConnection.getConnection();
          CallableStatement stmt = conn.prepareCall(call)) {
         stmt.setInt(1, manguoidung);
+        if (madanhmuc != null) {
+            stmt.setInt(2, madanhmuc);
+        } else {
+            stmt.setNull(2, java.sql.Types.INTEGER); // Truyền NULL nếu không có madanhmuc
+        }
         ResultSet rs = stmt.executeQuery();
-        
+
         while (rs.next()) {
             Task task = new Task();
             task.setMacongviec(rs.getInt("MACONGVIEC"));
@@ -68,32 +75,34 @@ public Task getTaskDetails(int macongviec) throws SQLException {
         stmt.setInt(1, macongviec);
         ResultSet rs = stmt.executeQuery();
 
-        // Chỉ lấy một nhiệm vụ duy nhất
         if (rs.next()) {
             task = new Task();
             task.setMacongviec(macongviec);
             task.setTieude(rs.getString("TIEUDE"));
             task.setMota(rs.getString("MOTA"));
 
-            // Lấy danh mục
             Category category = new Category();
-            category.setTen(rs.getString("TEN"));
+            category.setTen(rs.getString("TEN_DANHMUC"));
             task.setCategory(category);
 
             task.setMucdouutien(rs.getString("MUCDOUUTIEN"));
             task.setNgayhethan(rs.getTimestamp("NGAYHETHAN"));
 
-            // Khởi tạo các danh sách
+            // Lấy trạng thái hoàn thành và ngày hoàn thành
+            task.setDahoanthanh(rs.getBoolean("DAHOANTHANH"));
+            task.setNgayhoanthanh(rs.getTimestamp("NGAYHOANTHANH"));
+
+            // Khởi tạo danh sách
             task.setNhacNho(new ArrayList<>());
             task.setAttachments(new ArrayList<>());
             task.setActivityLogs(new ArrayList<>());
 
-            // Lấy thông tin thời gian nhắc nhở
+            // Xử lý thời gian nhắc nhở
             if (rs.getTimestamp("THOIGIANNHACNHO") != null) {
                 task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO"));
             }
 
-            // Lấy danh sách tệp đính kèm
+            // Xử lý tệp đính kèm
             if (rs.getString("TENTEP") != null) {
                 Attachment attachment = new Attachment();
                 attachment.setTentep(rs.getString("TENTEP"));
@@ -102,15 +111,32 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                 task.addAttachment(attachment);
             }
 
-            // Lấy danh sách nhật ký hoạt động
-            if (rs.getString("HANHDONG") != null) {
-                ActivityLog log = new ActivityLog();
-                log.setHanhdong(rs.getString("HANHDONG"));
-                log.setThoigian(rs.getTimestamp("THOIGIAN"));
-                task.getActivityLogs().add(log);
+            // Xử lý lịch sử hoạt động từ cột LICH_SU_HOAT_DONG
+            String lichSuHoatDong = rs.getString("LICH_SU_HOAT_DONG");
+            if (lichSuHoatDong != null && !lichSuHoatDong.isEmpty()) {
+                String[] actions = lichSuHoatDong.split(",");
+                for (String action : actions) {
+                    String[] parts = action.split("\\|");
+                    if (parts.length == 2) {
+                        String hanhDong = parts[0];
+                        String thoiGianStr = parts[1];
+
+                        // Chuyển đổi thời gian từ chuỗi thành Timestamp
+                        try {
+                            Timestamp thoiGian = Timestamp.valueOf(thoiGianStr);
+                            ActivityLog log = new ActivityLog();
+                            log.setHanhdong(hanhDong);
+                            log.setThoigian(thoiGian);
+                            task.getActivityLogs().add(log);
+                        } catch (IllegalArgumentException e) {
+                            // Ghi log lỗi nếu định dạng thời gian không hợp lệ
+                            System.err.println("Lỗi định dạng thời gian: " + thoiGianStr);
+                        }
+                    }
+                }
             }
 
-            // Tiếp tục lấy các hàng tiếp theo nếu có (cho danh sách nhắc nhở, tệp đính kèm, nhật ký)
+            // Xử lý các bản ghi tiếp theo (nếu có nhiều nhắc nhở hoặc tệp đính kèm)
             while (rs.next()) {
                 // Thêm thời gian nhắc nhở nếu có
                 if (rs.getTimestamp("THOIGIANNHACNHO") != null) {
@@ -124,14 +150,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                     attachment.setDuongdantep(rs.getString("DUONGDANTEP"));
                     attachment.setLoaitep(rs.getString("LOAITEP"));
                     task.addAttachment(attachment);
-                }
-
-                // Thêm nhật ký hoạt động nếu có
-                if (rs.getString("HANHDONG") != null) {
-                    ActivityLog log = new ActivityLog();
-                    log.setHanhdong(rs.getString("HANHDONG"));
-                    log.setThoigian(rs.getTimestamp("THOIGIAN"));
-                    task.getActivityLogs().add(log);
                 }
             }
         }
@@ -147,6 +165,73 @@ public Task getTaskDetails(int macongviec) throws SQLException {
             stmt.setInt(2, manguoidung);
             stmt.setString(3, hanhdong);
             stmt.execute();
+        }
+    }
+
+    // Cập nhật công việc
+    public String updateTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
+        String call = "{CALL UpdateTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(call)) {
+            stmt.setInt(1, task.getMacongviec());
+            stmt.setInt(2, task.getManguoidung());
+            stmt.setInt(3, task.getMadanhmuc() != null ? task.getMadanhmuc() : 0);
+            stmt.setString(4, task.getTieude());
+            stmt.setString(5, task.getMota());
+            stmt.setString(6, task.getMucdouutien());
+            stmt.setTimestamp(7, task.getNgayhethan());
+            stmt.setBoolean(8, hasReminder);
+            stmt.setTimestamp(9, reminderTime);
+            if (attachment != null) {
+                stmt.setString(10, attachment.getTentep());
+                stmt.setString(11, attachment.getDuongdantep());
+                stmt.setString(12, attachment.getLoaitep());
+            } else {
+                stmt.setNull(10, Types.VARCHAR);
+                stmt.setNull(11, Types.VARCHAR);
+                stmt.setNull(12, Types.VARCHAR);
+            }
+            stmt.registerOutParameter(13, Types.VARCHAR);
+            stmt.execute();
+            return stmt.getString(13); // Trả về thông báo lỗi (nếu có)
+        }
+    }
+
+    // Xóa công việc
+    public String deleteTask(int macongviec, int manguoidung) throws SQLException {
+        String call = "{CALL DeleteTask(?, ?, ?)}";
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(call)) {
+            stmt.setInt(1, macongviec);
+            stmt.setInt(2, manguoidung);
+            stmt.registerOutParameter(3, Types.VARCHAR);
+            stmt.execute();
+            return stmt.getString(3); // Trả về thông báo lỗi (nếu có)
+        }
+    }
+   
+    public boolean markTaskAsCompleted(int macongviec, int manguoidung) throws SQLException {
+        String call = "{CALL MarkTaskAsCompleted(?, ?, ?)}";
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(call)) {
+            // Thiết lập tham số đầu vào
+            stmt.setInt(1, macongviec);
+            stmt.setInt(2, manguoidung);
+            // Đăng ký tham số đầu ra
+            stmt.registerOutParameter(3, Types.VARCHAR);
+            
+            // Thực thi stored procedure
+            stmt.execute();
+            
+            // Lấy thông báo lỗi (nếu có)
+            String errorMessage = stmt.getString(3);
+            if (errorMessage != null) {
+                throw new SQLException(errorMessage);
+            }
+            
+            return true;
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi đánh dấu công việc là đã hoàn thành: " + e.getMessage(), e);
         }
     }
 }
