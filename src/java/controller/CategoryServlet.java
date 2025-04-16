@@ -57,24 +57,60 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         boolean success = categoryDAO.addCategory(user.getMaNguoiDung(), ten, mausac);
         response.getWriter().write("{\"success\": " + success + "}");
     }
+@Override
+protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
 
-    // Cập nhật danh mục (PUT)
-    @Override
-    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        User user = (User) request.getSession().getAttribute("user");
-        if (user == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"User not logged in\"}");
+    User user = (User) request.getSession().getAttribute("user");
+    if (user == null) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{\"success\": false, \"error\": \"User not logged in\"}");
+        return;
+    }
+
+    // Đọc thủ công nội dung form từ request body (xử lý PUT)
+    String body = request.getReader().lines().collect(java.util.stream.Collectors.joining(System.lineSeparator()));
+    java.util.Map<String, String> params = new java.util.HashMap<>();
+    for (String param : body.split("&")) {
+        String[] keyValue = param.split("=");
+        if (keyValue.length == 2) {
+            String key = java.net.URLDecoder.decode(keyValue[0], "UTF-8");
+            String value = java.net.URLDecoder.decode(keyValue[1], "UTF-8");
+            params.put(key, value);
+        }
+    }
+
+    try {
+        String madanhmucStr = params.get("madanhmuc");
+        if (madanhmucStr == null || madanhmucStr.trim().isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"error\": \"Mã danh mục không hợp lệ\"}");
             return;
         }
 
-        int madanhmuc = Integer.parseInt(request.getParameter("madanhmuc"));
-        String ten = request.getParameter("ten");
-        String mausac = request.getParameter("mausac");
+        int madanhmuc = Integer.parseInt(madanhmucStr);
+
+        String ten = params.get("ten");
+        if (ten == null || ten.trim().isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"error\": \"Tên danh mục không được để trống\"}");
+            return;
+        }
+
+        String mausac = params.getOrDefault("mausac", "#000000");
 
         boolean success = categoryDAO.updateCategory(madanhmuc, user.getMaNguoiDung(), ten, mausac);
-        response.getWriter().write("{\"success\": " + success + "}");
+        response.getWriter().write("{\"success\": " + success + (success ? "" : ", \"error\": \"Không thể cập nhật danh mục\"") + "}");
+    } catch (NumberFormatException e) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write("{\"success\": false, \"error\": \"Mã danh mục không hợp lệ\"}");
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().write("{\"success\": false, \"error\": \"Lỗi máy chủ: " + e.getMessage() + "\"}");
     }
+}
 
     // Xóa danh mục (DELETE)
   @Override

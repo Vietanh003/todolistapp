@@ -1,5 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,6 +9,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/tasks.css">
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+    </script>
 </head>
 <body>
     <%
@@ -60,7 +62,38 @@
             </div>
         </div>
     </div>
-
+ <!-- Modal chỉnh sửa danh mục -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Chỉnh sửa danh mục</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCategoryForm">
+                        <input type="hidden" id="editCategoryId" name="madanhmuc">
+                        <div class="mb-3">
+                            <label for="editCategoryIdDisplay" class="form-label">Mã danh mục</label>
+                            <input type="text" class="form-control" id="editCategoryIdDisplay" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryName" class="form-label">Tên danh mục</label>
+                            <input type="text" class="form-control" id="editCategoryName" name="ten" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryColor" class="form-label">Màu sắc</label>
+                            <input type="color" class="form-control form-control-color" id="editCategoryColor" name="mausac" value="#000000">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal Thêm Công Việc -->
     <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -83,7 +116,6 @@
                             <label for="taskCategory" class="form-label">Danh mục</label>
                             <select class="form-select" id="taskCategory" name="madanhmuc">
                                 <option value="">Không chọn</option>
-                                <!-- Danh sách danh mục sẽ được thêm bằng JavaScript -->
                             </select>
                         </div>
                         <div class="mb-3">
@@ -182,7 +214,6 @@
                             <label for="editMadanhmuc" class="form-label">Danh mục</label>
                             <select class="form-control" id="editMadanhmuc" name="madanhmuc">
                                 <option value="">Không có danh mục</option>
-                                <!-- Danh sách danh mục sẽ được điền bằng JavaScript -->
                             </select>
                         </div>
                         <div class="mb-3">
@@ -217,6 +248,43 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/layout.js"></script>
+    <script src="${pageContext.request.contextPath}/js/utils.js"></script>
+    <script src="${pageContext.request.contextPath}/js/user.js"></script>
+    <script src="${pageContext.request.contextPath}/js/category.js"></script>
+    <script src="${pageContext.request.contextPath}/js/sidebar.js"></script>
+    <script src="${pageContext.request.contextPath}/js/task.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            updateNavbar();
+            loadCategories();
+            loadUserProfile();
+            loadCategoriesForEdit();
+            setupSidebar();
+            setupTaskForm();
+            setupViewTasksButton();
+            setupViewHomeButton();
+            loadTasks();
+
+            const taskCategorySelect = document.getElementById('taskCategory');
+            if (taskCategorySelect) {
+                fetchCategories().then(categories => {
+                    taskCategorySelect.innerHTML = '<option value="">Không chọn</option>';
+                    if (!categories || categories.length === 0) {
+                        taskCategorySelect.innerHTML += '<option value="" disabled>Không có danh mục nào</option>';
+                    } else {
+                        categories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category.madanhmuc;
+                            option.textContent = category.ten;
+                            taskCategorySelect.appendChild(option);
+                        });
+                    }
+                }).catch(error => {
+                    console.error('Lỗi khi tải danh mục:', error);
+                    taskCategorySelect.innerHTML = '<option value="" disabled>Lỗi khi tải danh mục</option>';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

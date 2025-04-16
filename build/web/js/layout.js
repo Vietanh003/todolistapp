@@ -7,11 +7,12 @@
 /* global bootstrap */
 
 document.addEventListener("DOMContentLoaded", function () {
+      setupSidebar();
+     updateNavbar();
     loadCategories();
-    updateNavbar();
+   loadUserProfile();
     loadCategoriesForEdit();
     loadTaskDetails();
-    setupSidebar();
     loadUserInfo();
     setupTaskForm();
     setupViewTasksButton();
@@ -641,15 +642,33 @@ function markTaskAsCompleted(macongviec) {
 }
 // Hàm cập nhật navbar với thông tin người dùng
 function updateNavbar() {
-    fetch('userInfo', {
+    const userDropdownContainer = document.getElementById('userDropdownContainer');
+    const loginButton = document.getElementById('loginButton');
+    const navbarAvatar = document.getElementById('navbarAvatar');
+    const navbarUsername = document.getElementById('navbarUsername');
+
+    // Kiểm tra xem các phần tử có tồn tại không
+    if (!userDropdownContainer || !loginButton || !navbarAvatar || !navbarUsername) {
+        console.error('Không tìm thấy các phần tử cần thiết trong DOM');
+        return;
+    }
+
+    // Kiểm tra window.contextPath
+    if (!window.contextPath) {
+        console.error('window.contextPath không được định nghĩa');
+        return;
+    }
+
+    fetch(window.contextPath + '/userInfo', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'same-origin' // Gửi cookie session
     })
     .then(response => {
+        console.log('Response status:', response.status);
         if (response.status === 401) {
-            // Người dùng chưa đăng nhập
             throw new Error('Người dùng chưa đăng nhập');
         }
         if (!response.ok) {
@@ -658,29 +677,31 @@ function updateNavbar() {
         return response.json();
     })
     .then(data => {
+        console.log('Dữ liệu người dùng:', data);
         // Hiển thị dropdown người dùng
-        document.getElementById('userDropdownContainer').style.display = 'block';
-        document.getElementById('loginButton').style.display = 'none';
+        userDropdownContainer.style.display = 'block';
+        loginButton.style.display = 'none';
 
         // Cập nhật avatar và tên tài khoản
-        document.getElementById('navbarAvatar').src = data.duongDanAnhDaiDien || (window.contextPath + '/img/user-avatar.png');
-        document.getElementById('navbarUsername').textContent = data.tenNguoiDung || 'Người dùng';
+        navbarAvatar.src = data.duongDanAnhDaiDien || (window.contextPath + '/img/user-avatar.png');
+        navbarUsername.textContent = data.tenNguoiDung || 'Người dùng';
     })
     .catch(error => {
         console.error('Lỗi khi cập nhật navbar:', error);
         // Hiển thị nút Đăng nhập
-        document.getElementById('userDropdownContainer').style.display = 'none';
-        document.getElementById('loginButton').style.display = 'block';
+        userDropdownContainer.style.display = 'none';
+        loginButton.style.display = 'block';
     });
 }
 
 // Hàm hiển thị thông tin người dùng trong modal
 function showUserInfo() {
-    fetch('userInfo', {
+    fetch(window.contextPath + '/userInfo', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'same-origin' // Gửi cookie session
     })
     .then(response => {
         if (!response.ok) {
@@ -703,5 +724,35 @@ function showUserInfo() {
     .catch(error => {
         console.error('Lỗi:', error);
         alert('Lỗi khi lấy thông tin người dùng: ' + error.message);
+    });
+}
+function loadUserProfile() {
+    fetch(window.contextPath + '/userInfo', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi khi lấy thông tin người dùng');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            document.getElementById('profileError').textContent = data.error;
+            return;
+        }
+
+        document.getElementById('profileAvatar').src = data.duongDanAnhDaiDien || (window.contextPath + '/img/user-avatar.png');
+        document.getElementById('profileUsername').textContent = data.tenNguoiDung || 'Người dùng';
+        document.getElementById('profileEmail').textContent = data.email || 'Không có email';
+        document.getElementById('profileCreatedAt').textContent = 'Ngày tạo: ' + (data.ngayTao ? new Date(data.ngayTao).toLocaleString() : 'Không có thông tin');
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        document.getElementById('profileError').textContent = 'Lỗi khi lấy thông tin người dùng: ' + error.message;
     });
 }

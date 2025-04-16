@@ -1,8 +1,8 @@
 package controller;
 
 import dao.UserDAO;
-import dao.UserDAO.RegisterResult;
 import model.User;
+import util.OperationResult; 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +34,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
         User user = new User(email, password, username);
-        RegisterResult result = userDAO.registerUser(user);
+        OperationResult result = userDAO.registerUser(user);
 
         if (result.isSuccess()) {
             response.sendRedirect("login.jsp");

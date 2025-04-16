@@ -1,17 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="sidebar" id="sidebar">
     <button class="btn btn-outline-light w-100 mb-3" id="pinSidebar">
         <i class="fas fa-thumbtack"></i> Ghim 
-    </button>
-    <button class="btn btn-light w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-        <i class="fas fa-plus"></i> Thêm danh mục
     </button>
     <button class="btn btn-light w-100 mb-3" id="viewHomeBtn" onclick="window.location.href='home.jsp'">
         <i class="fas fa-home"></i> Trang chủ
     </button>
     <button class="btn btn-light w-100 mb-3" id="viewTasksBtn" onclick="window.location.href='tasks.jsp'">
         <i class="fas fa-tasks"></i> Xem công việc
+    </button>
+     <button class="btn btn-light w-100 mb-3" onclick="window.location.href='profile.jsp'">
+        <i class="fas fa-user"></i> Trang cá nhân
+    </button>
+      <button class="btn btn-light w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        <i class="fas fa-plus"></i> Thêm danh mục
     </button>
     <button class="btn btn-light w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">
         <i class="fas fa-plus me-2"></i> Thêm Công Việc

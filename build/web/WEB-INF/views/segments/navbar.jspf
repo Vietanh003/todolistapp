@@ -1,9 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!-- Thêm biến global contextPath -->
-<script>
-    window.contextPath = '${pageContext.request.contextPath}';
-</script>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <button class="btn btn-light me-2" id="toggleSidebar">
@@ -19,7 +15,11 @@
             </ul>
         </div>
         <div class="ms-auto" id="userSection">
-            <!-- Placeholder cho phần hiển thị người dùng -->
+            <!-- Hiển thị nút đăng nhập nếu chưa đăng nhập -->
+            <a href="login.jsp" class="btn btn-light" id="loginButton" style="display: none;">
+                Đăng nhập
+            </a>
+            <!-- Nếu đã đăng nhập thì hiển thị dropdown người dùng -->
             <div class="dropdown" id="userDropdownContainer" style="display: none;">
                 <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
                     <img id="navbarAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle me-2" width="40" height="40" alt="Avatar">
@@ -27,11 +27,9 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#" onclick="showUserInfo(); return false;">🔧 Xem thông tin</a></li>
-                    <li><a class="dropdown-item text-danger" href="logout">🚪 Đăng xuất</a></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(); return false;">🚪 Đăng xuất</a></li>
                 </ul>
             </div>
-            <!-- Nút Đăng nhập (hiển thị nếu chưa đăng nhập) -->
-            <a href="login.jsp" class="btn btn-light" id="loginButton">Đăng nhập</a>
         </div>
     </div>
 </nav>
@@ -46,10 +44,10 @@
             </div>
             <div class="modal-body" id="userInfoContent">
                 <div class="text-center">
-                    <img id="userAvatar" src="" class="rounded-circle mb-3" width="100" height="100" alt="Avatar">
-                    <h5 id="userName"></h5>
-                    <p id="userEmail" class="text-muted"></p>
-                    <p id="userCreatedAt" class="text-muted"></p>
+                    <img id="userAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle mb-3" width="100" height="100" alt="Avatar">
+                    <h5 id="userName">Người dùng</h5>
+                    <p id="userEmail" class="text-muted">Không có email</p>
+                    <p id="userCreatedAt" class="text-muted">Ngày tạo: Không có thông tin</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -58,3 +56,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Hàm xác nhận đăng xuất
+    function confirmLogout() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+            if (!window.contextPath) {
+                console.error('window.contextPath không được định nghĩa');
+                alert('Lỗi cấu hình hệ thống.');
+                return;
+            }
+            window.location.href = window.contextPath + '/logout';
+        }
+    }
+</script>

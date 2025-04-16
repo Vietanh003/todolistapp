@@ -19,4 +19,8 @@ public class LogoutServlet extends HttpServlet {
         }
         response.sendRedirect("login.jsp");
     }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }

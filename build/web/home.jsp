@@ -10,6 +10,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+    </script>
 </head>
 <body>
     <%
@@ -28,6 +31,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/layout.js"></script>
+    <script src="${pageContext.request.contextPath}/js/utils.js"></script>
+    <script src="${pageContext.request.contextPath}/js/user.js"></script>
+    <script src="${pageContext.request.contextPath}/js/category.js"></script>
+    <script src="${pageContext.request.contextPath}/js/sidebar.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            updateNavbar();
+            loadCategories();
+            loadUserProfile();
+            setupSidebar();
+            setupViewTasksButton();
+            setupViewHomeButton();
+        });
+    </script>
 </body>
 </html>

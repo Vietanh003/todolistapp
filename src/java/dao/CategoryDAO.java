@@ -131,7 +131,7 @@ public class CategoryDAO {
             stmt.setInt(1, madanhmuc);
             stmt.setInt(2, userId);
 
-            return stmt.executeUpdate() > 0; // Trả về true nếu xóa thành công
+            return stmt.executeUpdate() > 0; 
 
         } catch (SQLException e) {
             e.printStackTrace();
