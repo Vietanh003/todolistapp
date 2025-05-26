@@ -3,12 +3,12 @@ package model;
 import java.sql.Timestamp;
 
 public class Attachment {
-    private int matepdinhkem;      // Mã tệp đính kèm (MATEPDINHKEM)
-    private int macongviec;        // Mã công việc (MACONGVIEC)
-    private String tentep;         // Tên tệp (TENTEP)
-    private String duongdantep;    // Đường dẫn tệp (DUONGDANTEP)
-    private String loaitep;        // Loại tệp (LOAITEP)
-    private Timestamp ngaytaiLen;  // Ngày tải lên (NGAYTAI_LEN)
+    private int matepdinhkem;      
+    private int macongviec;        
+    private String tentep;        
+    private String duongdantep;   
+    private String loaitep;        
+    private Timestamp ngaytaiLen; 
 
     // Getters and Setters
     public int getMatepdinhkem() { return matepdinhkem; }

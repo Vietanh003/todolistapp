@@ -55,9 +55,10 @@ function loadTasks(madanhmuc = null) {
                 taskGrid.appendChild(taskCard);
             });
         })
-        .catch(error => {
+       .catch(error => {
             console.error('Lỗi:', error);
             taskGrid.innerHTML = `<p class="text-danger text-center">Lỗi khi tải danh sách công việc: ${error.message}</p>`;
+            showErrorAlert(error.message, "Lỗi khi tải công việc");
         });
 }
 
@@ -70,6 +71,7 @@ function loadTaskDetails(macongviec) {
 
     if (!macongviec) {
         taskInfo.innerHTML = '<p class="text-danger">Mã công việc không hợp lệ.</p>';
+          showWarningAlert("Mã công việc không hợp lệ!");
         return;
     }
 
@@ -90,6 +92,7 @@ function loadTaskDetails(macongviec) {
 
             if (!task) {
                 taskInfo.innerHTML = '<p class="text-danger">Không tìm thấy công việc.</p>';
+                  showErrorAlert("Không tìm thấy công việc!");
                 return;
             }
 
@@ -203,6 +206,7 @@ function loadTaskDetails(macongviec) {
         .catch(error => {
             console.error('Lỗi:', error);
             taskInfo.innerHTML = '<p class="text-danger">Lỗi khi tải chi tiết công việc.</p>';
+             showErrorAlert("Lỗi khi tải chi tiết công việc: " + error.message);
         });
 }
 
@@ -219,7 +223,6 @@ function setupTaskForm() {
         reminderDateDiv.style.display = this.checked ? "block" : "none";
     });
 }
-
 function addTask() {
     const form = document.getElementById("addTaskForm");
     const formData = new FormData(form);
@@ -229,20 +232,24 @@ function addTask() {
         body: formData
     })
     .then(response => {
-        if (response.ok) {
-            alert("Thêm công việc thành công!");
-            bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
-            window.location.reload();
-        } else {
-            alert("Lỗi khi thêm công việc!");
+        if (!response.ok) {
+            throw new Error("Lỗi khi thêm công việc!");
         }
+        return response.json();
     })
-    .catch(error => console.error("Lỗi:", error));
+    .then(data => {
+        showSuccessAlert("Thêm công việc thành công!");
+        bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error("Lỗi:", error);
+        showErrorAlert("Lỗi khi thêm công việc: " + error.message);
+    });
 }
-
 function editTask(macongviec) {
     if (!macongviec || macongviec === "undefined") {
-        alert("Mã công việc không hợp lệ.");
+         showWarningAlert("Mã công việc không hợp lệ!");
         return;
     }
 
@@ -267,12 +274,11 @@ function editTask(macongviec) {
         })
         .catch(error => {
             console.error("Lỗi:", error);
-            alert("Lỗi khi lấy chi tiết công việc.");
+           showErrorAlert("Lỗi khi lấy chi tiết công việc: " + error.message);
         });
 }
-
 function deleteTask(macongviec) {
-    if (confirm('Bạn có chắc chắn muốn xóa công việc này?')) {
+    showConfirmAlert('Bạn có chắc chắn muốn xóa công việc này?', () => {
         const formData = new FormData();
         formData.append("action", "deleteTask");
         formData.append("macongviec", macongviec);
@@ -284,53 +290,52 @@ function deleteTask(macongviec) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert("Lỗi: " + data.error);
+                showErrorAlert("Lỗi: " + data.error);
             } else {
-                alert(data.message);
+                showSuccessAlert(data.message || "Xóa công việc thành công!");
                 bootstrap.Modal.getInstance(document.getElementById('taskDetailsModal')).hide();
                 loadTasks();
             }
         })
         .catch(error => {
             console.error("Lỗi:", error);
-            alert("Lỗi khi xóa công việc.");
+            showErrorAlert("Lỗi khi xóa công việc: " + error.message);
         });
-    }
+    });
 }
 
 function markTaskAsCompleted(macongviec) {
     if (!macongviec) {
-        alert('Mã công việc không hợp lệ.');
+        showWarningAlert('Mã công việc không hợp lệ!');
         return;
     }
 
-    if (!confirm('Bạn có chắc chắn muốn đánh dấu công việc này là đã hoàn thành?')) {
-        return;
-    }
-
-    fetch(`tasks?action=markAsCompleted&macongviec=${macongviec}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Lỗi khi đánh dấu công việc là đã hoàn thành');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert(data.message || 'Công việc đã được đánh dấu là đã hoàn thành!');
-            loadTaskDetails(macongviec);
-        } else {
-            alert('Lỗi: ' + (data.error || 'Không thể đánh dấu công việc là đã hoàn thành.'));
-        }
-    })
-    .catch(error => {
-        console.error('Lỗi:', error);
-        alert('Lỗi khi đánh dấu công việc: ' + error.message);
+    showConfirmAlert('Bạn có chắc chắn muốn đánh dấu công việc này là đã hoàn thành?', () => {
+        fetch(`tasks?action=markAsCompleted&macongviec=${macongviec}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi khi đánh dấu công việc là đã hoàn thành');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showSuccessAlert(data.message || 'Công việc đã được đánh dấu là đã hoàn thành!');
+                loadTaskDetails(macongviec);
+                 loadTasks();
+            } else {
+                showErrorAlert(data.error || 'Không thể đánh dấu công việc là đã hoàn thành.');
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            showErrorAlert('Lỗi khi đánh dấu công việc: ' + error.message);
+        });
     });
 }
 
@@ -347,9 +352,9 @@ document.addEventListener('submit', function(event) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert("Lỗi: " + data.error);
+                showErrorAlert("Lỗi: " + data.error);
             } else {
-                alert(data.message);
+                showSuccessAlert(data.message || "Cập nhật công việc thành công!");
                 bootstrap.Modal.getInstance(document.getElementById('editTaskModal')).hide();
                 bootstrap.Modal.getInstance(document.getElementById('taskDetailsModal')).hide();
                 loadTasks();
@@ -357,7 +362,7 @@ document.addEventListener('submit', function(event) {
         })
         .catch(error => {
             console.error("Lỗi:", error);
-            alert("Lỗi khi cập nhật công việc.");
+            showErrorAlert("Lỗi khi cập nhật công việc: " + error.message);
         });
     }
 });

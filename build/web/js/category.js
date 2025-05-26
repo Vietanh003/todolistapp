@@ -16,7 +16,6 @@ function fetchCategories() {
 /**
  * Tải danh sách danh mục vào dropdown
  */
-
 function loadCategories() {
     fetch("CategoryServlet")
         .then(response => {
@@ -104,8 +103,10 @@ function loadCategories() {
             console.error("Lỗi khi tải danh mục:", error);
             let categoryList = document.getElementById("category-list");
             categoryList.innerHTML = `<li class="dropdown-item text-danger">Lỗi khi tải danh mục: ${error.message}</li>`;
+            showErrorAlert("Lỗi khi tải danh mục: " + error.message);
         });
 }
+
 /**
  * Thêm danh mục mới
  */
@@ -114,7 +115,7 @@ function addCategory() {
     let mausac = document.getElementById("categoryColor").value;
 
     if (!ten) {
-        alert("Tên danh mục không được để trống!");
+        showErrorAlert("Tên danh mục không được để trống!");
         return;
     }
 
@@ -126,19 +127,18 @@ function addCategory() {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert("Thêm danh mục thành công!");
+            showSuccessAlert("Thêm danh mục thành công!");
             loadCategories();
             bootstrap.Modal.getInstance(document.getElementById("addCategoryModal")).hide();
         } else {
-            alert(result.error || "Lỗi khi thêm danh mục!");
+            showErrorAlert(result.error || "Lỗi khi thêm danh mục!");
         }
     })
     .catch(error => {
         console.error("Lỗi:", error);
-        alert("Lỗi khi thêm danh mục: " + error.message);
+        showErrorAlert("Lỗi khi thêm danh mục: " + error.message);
     });
 }
-
 
 /**
  * Hiển thị modal chỉnh sửa danh mục
@@ -147,14 +147,14 @@ function editCategory(madanhmuc, ten, mausac) {
     const modalElement = document.getElementById("editCategoryModal");
     if (!modalElement) {
         console.error("Không tìm thấy phần tử modal");
-        alert("Lỗi: Không tìm thấy modal chỉnh sửa danh mục!");
+        showErrorAlert("Lỗi: Không tìm thấy modal chỉnh sửa danh mục!");
         return;
     }
 
     // Kiểm tra madanhmuc
     if (!madanhmuc || isNaN(madanhmuc)) {
         console.error("Mã danh mục không hợp lệ:", madanhmuc);
-        alert("Lỗi: Mã danh mục không hợp lệ!");
+        showErrorAlert("Lỗi: Mã danh mục không hợp lệ!");
         return;
     }
 
@@ -166,7 +166,7 @@ function editCategory(madanhmuc, ten, mausac) {
 
     if (!editCategoryId || !editCategoryIdDisplay || !editCategoryName || !editCategoryColor) {
         console.error("Không tìm thấy các trường trong modal");
-        alert("Lỗi: Không tìm thấy các trường trong modal!");
+        showErrorAlert("Lỗi: Không tìm thấy các trường trong modal!");
         return;
     }
 
@@ -179,6 +179,7 @@ function editCategory(madanhmuc, ten, mausac) {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
+
 /**
  * Lưu thông tin chỉnh sửa danh mục
  */
@@ -193,12 +194,12 @@ function saveCategory() {
 
     // Kiểm tra dữ liệu trước khi gửi
     if (!madanhmuc || isNaN(madanhmuc)) {
-        alert("Mã danh mục không hợp lệ!");
+        showErrorAlert("Mã danh mục không hợp lệ!");
         return;
     }
 
     if (!ten) {
-        alert("Tên danh mục không được để trống!");
+        showErrorAlert("Tên danh mục không được để trống!");
         return;
     }
 
@@ -229,20 +230,20 @@ function saveCategory() {
     })
     .then(result => {
         if (result.success) {
-            alert("Cập nhật danh mục thành công!");
+            showSuccessAlert("Cập nhật danh mục thành công!");
             loadCategories();
             bootstrap.Modal.getInstance(modal).hide();
         } else {
-            alert(result.error || "Lỗi khi cập nhật danh mục!");
+            showErrorAlert(result.error || "Lỗi khi cập nhật danh mục!");
         }
     })
     .catch(error => {
         console.error("Lỗi khi cập nhật danh mục:", error);
         if (error.message.includes("Phiên đăng nhập đã hết hạn")) {
-            alert(error.message);
+            showErrorAlert(error.message, "Phiên hết hạn");
             window.location.href = "login.jsp";
         } else {
-            alert(`Lỗi khi cập nhật danh mục: ${error.message}`);
+            showErrorAlert(`Lỗi khi cập nhật danh mục: ${error.message}`);
         }
     });
 }
@@ -251,25 +252,23 @@ function saveCategory() {
  * Xóa danh mục
  */
 function deleteCategory(madanhmuc) {
-    if (!confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
-        return;
-    }
-
-    fetch("CategoryServlet?madanhmuc=" + madanhmuc, {
-        method: "DELETE"
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            alert("Xóa danh mục thành công!");
-            loadCategories();
-        } else {
-            alert(result.error || "Lỗi khi xóa danh mục!");
-        }
-    })
-    .catch(error => {
-        console.error("Lỗi:", error);
-        alert("Lỗi khi xóa danh mục: " + error.message);
+    showConfirmAlert("Bạn có chắc chắn muốn xóa danh mục này không?", () => {
+        fetch("CategoryServlet?madanhmuc=" + madanhmuc, {
+            method: "DELETE"
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                showSuccessAlert("Xóa danh mục thành công!");
+                loadCategories();
+            } else {
+                showErrorAlert(result.error || "Lỗi khi xóa danh mục!");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi:", error);
+            showErrorAlert("Lỗi khi xóa danh mục: " + error.message);
+        });
     });
 }
 
@@ -296,5 +295,11 @@ function loadCategoriesForEdit() {
         })
         .catch(error => {
             console.error("Lỗi khi tải danh mục:", error);
+            showErrorAlert("Lỗi khi tải danh mục: " + error.message);
         });
 }
+
+/* 
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
+ */

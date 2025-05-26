@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/tasks.css">
     <script>
@@ -23,6 +24,7 @@
     %>
     <jsp:include page="/WEB-INF/views/segments/navbar.jspf" />
     <jsp:include page="/WEB-INF/views/segments/sidebar.jspf" />
+     <jsp:include page="/WEB-INF/views/segments/footer.jspf" />
 
     <div class="main-content" id="mainContent">
         <h2 class="mb-4">Danh Sách Công Việc</h2>
@@ -253,6 +255,9 @@
     <script src="${pageContext.request.contextPath}/js/category.js"></script>
     <script src="${pageContext.request.contextPath}/js/sidebar.js"></script>
     <script src="${pageContext.request.contextPath}/js/task.js"></script>
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
+    <script src="${pageContext.request.contextPath}/js/alert.js"></script>
+    <script src="${pageContext.request.contextPath}/js/quotes.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             updateNavbar();
@@ -264,6 +269,7 @@
             setupViewTasksButton();
             setupViewHomeButton();
             loadTasks();
+            fetchNotifications();
 
             const taskCategorySelect = document.getElementById('taskCategory');
             if (taskCategorySelect) {
