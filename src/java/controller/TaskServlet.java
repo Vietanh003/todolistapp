@@ -127,7 +127,10 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
     HttpSession session = request.getSession(false);
     User user = (User) session.getAttribute("user");
     if (user == null) {
-        response.sendRedirect("login.jsp");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"success\": false, \"error\": \"Người dùng chưa đăng nhập\"}");
         return;
     }
 
@@ -150,7 +153,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 
             if (macongviecStr == null || macongviecStr.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ\"}");
+                response.getWriter().write("{\"success\": false, \"error\": \"Mã công việc không hợp lệ\"}");
                 return;
             }
 
@@ -193,15 +196,15 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             String errorMessage = taskDAO.updateTask(task, hasReminder, reminderTime, attachment);
             if (errorMessage != null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+                response.getWriter().write("{\"success\": false, \"error\": \"" + errorMessage + "\"}");
             } else {
-                response.getWriter().write("{\"message\": \"Cập nhật công việc thành công\"}");
+                response.getWriter().write("{\"success\": true, \"message\": \"Cập nhật công việc thành công\"}");
             }
         } else if ("deleteTask".equals(action)) {
             String macongviecStr = request.getParameter("macongviec");
             if (macongviecStr == null || macongviecStr.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ\"}");
+                response.getWriter().write("{\"success\": false, \"error\": \"Mã công việc không hợp lệ\"}");
                 return;
             }
 
@@ -209,15 +212,15 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             String errorMessage = taskDAO.deleteTask(macongviec, user.getMaNguoiDung());
             if (errorMessage != null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+                response.getWriter().write("{\"success\": false, \"error\": \"" + errorMessage + "\"}");
             } else {
-                response.getWriter().write("{\"message\": \"Xóa công việc thành công\"}");
+                response.getWriter().write("{\"success\": true, \"message\": \"Xóa công việc thành công\"}");
             }
         } else if ("markAsCompleted".equals(action)) {
             String macongviecStr = request.getParameter("macongviec");
             if (macongviecStr == null || macongviecStr.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ\"}");
+                response.getWriter().write("{\"success\": false, \"error\": \"Mã công việc không hợp lệ\"}");
                 return;
             }
 
@@ -230,7 +233,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 response.getWriter().write("{\"success\": false, \"error\": \"Không thể đánh dấu công việc là đã hoàn thành\"}");
             }
         } else {
-            // Xử lý thêm công việc (logic hiện tại)
+            // Xử lý thêm công việc
             String tieude = request.getParameter("tieude");
             String mota = request.getParameter("mota");
             String madanhmucStr = request.getParameter("madanhmuc");
@@ -274,22 +277,21 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             }
 
             int newTaskId = taskDAO.addTask(task, hasReminder, reminderTime, attachment);
-            response.sendRedirect("tasks");
+            response.getWriter().write("{\"success\": true, \"newTaskId\": " + newTaskId + ", \"message\": \"Thêm công việc thành công\"}");
         }
     } catch (SQLException e) {
         e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write("{\"error\": \"Lỗi khi xử lý công việc: " + e.getMessage() + "\"}");
+        response.getWriter().write("{\"success\": false, \"error\": \"Lỗi khi xử lý công việc: " + e.getMessage() + "\"}");
     } catch (NumberFormatException e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("{\"error\": \"Dữ liệu không hợp lệ: " + e.getMessage() + "\"}");
+        response.getWriter().write("{\"success\": false, \"error\": \"Dữ liệu không hợp lệ: " + e.getMessage() + "\"}");
     } catch (Exception e) {
         e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write("{\"error\": \"Lỗi không xác định: " + e.getMessage() + "\"}");
+        response.getWriter().write("{\"success\": false, \"error\": \"Lỗi không xác định: " + e.getMessage() + "\"}");
     }
 }
-
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         String[] items = contentDisp.split(";");

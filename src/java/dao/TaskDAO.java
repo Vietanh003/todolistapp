@@ -7,7 +7,9 @@ import model.ActivityLog;
 import util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class TaskDAO {
 
@@ -39,19 +41,21 @@ public class TaskDAO {
         }
     }
 
-    // Lấy danh sách công việc
-   public List<Task> getTasks(int manguoidung, Integer madanhmuc) throws SQLException {
+ // Lấy danh sách công việc
+public List<Task> getTasks(int manguoidung, Integer madanhmuc) throws SQLException {
     List<Task> tasks = new ArrayList<>();
     String call = "{CALL GetTasks(?, ?)}";
 
     try (Connection conn = DBConnection.getConnection();
          CallableStatement stmt = conn.prepareCall(call)) {
+        
         stmt.setInt(1, manguoidung);
         if (madanhmuc != null) {
             stmt.setInt(2, madanhmuc);
         } else {
-            stmt.setNull(2, java.sql.Types.INTEGER); // Truyền NULL nếu không có madanhmuc
+            stmt.setNull(2, java.sql.Types.INTEGER);
         }
+
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
@@ -59,13 +63,15 @@ public class TaskDAO {
             task.setMacongviec(rs.getInt("MACONGVIEC"));
             task.setTieude(rs.getString("TIEUDE"));
             task.setMucdouutien(rs.getString("MUCDOUUTIEN"));
-            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN"));
+            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN")); // KHÔNG dùng Calendar ở đây
             task.setDahoanthanh(rs.getBoolean("DAHOANTHANH"));
             tasks.add(task);
         }
     }
     return tasks;
 }
+
+
 public Task getTaskDetails(int macongviec) throws SQLException {
     Task task = null;
     String call = "{CALL GetTaskDetails(?)}";
@@ -75,6 +81,7 @@ public Task getTaskDetails(int macongviec) throws SQLException {
         stmt.setInt(1, macongviec);
         ResultSet rs = stmt.executeQuery();
 
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         if (rs.next()) {
             task = new Task();
             task.setMacongviec(macongviec);
@@ -86,23 +93,19 @@ public Task getTaskDetails(int macongviec) throws SQLException {
             task.setCategory(category);
 
             task.setMucdouutien(rs.getString("MUCDOUUTIEN"));
-            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN"));
+            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN", calendar));
 
-            // Lấy trạng thái hoàn thành và ngày hoàn thành
             task.setDahoanthanh(rs.getBoolean("DAHOANTHANH"));
-            task.setNgayhoanthanh(rs.getTimestamp("NGAYHOANTHANH"));
+            task.setNgayhoanthanh(rs.getTimestamp("NGAYHOANTHANH", calendar));
 
-            // Khởi tạo danh sách
             task.setNhacNho(new ArrayList<>());
             task.setAttachments(new ArrayList<>());
             task.setActivityLogs(new ArrayList<>());
 
-            // Xử lý thời gian nhắc nhở
-            if (rs.getTimestamp("THOIGIANNHACNHO") != null) {
-                task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO"));
+            if (rs.getTimestamp("THOIGIANNHACNHO", calendar) != null) {
+                task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO", calendar));
             }
 
-            // Xử lý tệp đính kèm
             if (rs.getString("TENTEP") != null) {
                 Attachment attachment = new Attachment();
                 attachment.setTentep(rs.getString("TENTEP"));
@@ -111,7 +114,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                 task.addAttachment(attachment);
             }
 
-            // Xử lý lịch sử hoạt động từ cột LICH_SU_HOAT_DONG
             String lichSuHoatDong = rs.getString("LICH_SU_HOAT_DONG");
             if (lichSuHoatDong != null && !lichSuHoatDong.isEmpty()) {
                 String[] actions = lichSuHoatDong.split(",");
@@ -120,8 +122,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                     if (parts.length == 2) {
                         String hanhDong = parts[0];
                         String thoiGianStr = parts[1];
-
-                        // Chuyển đổi thời gian từ chuỗi thành Timestamp
                         try {
                             Timestamp thoiGian = Timestamp.valueOf(thoiGianStr);
                             ActivityLog log = new ActivityLog();
@@ -129,21 +129,17 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                             log.setThoigian(thoiGian);
                             task.getActivityLogs().add(log);
                         } catch (IllegalArgumentException e) {
-                            // Ghi log lỗi nếu định dạng thời gian không hợp lệ
                             System.err.println("Lỗi định dạng thời gian: " + thoiGianStr);
                         }
                     }
                 }
             }
 
-            // Xử lý các bản ghi tiếp theo (nếu có nhiều nhắc nhở hoặc tệp đính kèm)
             while (rs.next()) {
-                // Thêm thời gian nhắc nhở nếu có
-                if (rs.getTimestamp("THOIGIANNHACNHO") != null) {
-                    task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO"));
+                if (rs.getTimestamp("THOIGIANNHACNHO", calendar) != null) {
+                    task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO", calendar));
                 }
 
-                // Thêm tệp đính kèm nếu có
                 if (rs.getString("TENTEP") != null) {
                     Attachment attachment = new Attachment();
                     attachment.setTentep(rs.getString("TENTEP"));

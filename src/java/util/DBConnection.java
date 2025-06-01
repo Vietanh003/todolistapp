@@ -5,16 +5,24 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/ToPlan";
-    private static final String USER = "root"; // 
-    private static final String PASSWORD = "1234"; // 
+   private static final String URL = "jdbc:mysql://localhost:3306/ToPlan?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&useLegacyDatetimeCode=false";
 
-    public static Connection getConnection() throws SQLException {
+    private static final String USER = "root";
+    private static final String PASSWORD = "1234";
+
+    // Static block để load Driver một lần khi class được load
+    static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("MySQL JDBC Driver loaded successfully.");
         } catch (ClassNotFoundException e) {
-            throw new SQLException("MySQL JDBC Driver not found.", e);
+            System.err.println("Error loading MySQL JDBC Driver:");
+            e.printStackTrace();
         }
+    }
+
+    // Phương thức để lấy kết nối đến database
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

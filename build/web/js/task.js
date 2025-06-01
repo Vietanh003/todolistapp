@@ -48,7 +48,7 @@ function loadTasks(madanhmuc = null) {
                 taskCard.innerHTML = `
                     <div class="priority ${priorityClass}">${task.mucdouutien || 'Không xác định'}</div>
                     <div class="title">${task.tieude || 'Không có tiêu đề'}</div>
-                    <div class="due-date"><i class="fas fa-calendar-alt"></i> Hạn: ${task.ngayhethan ? formatDate(task.ngayhethan) : 'Không có'}</div>
+                   <div class="due-date"><i class="fas fa-calendar-alt"></i> Hạn: ${task.ngayhethan ? formatDate(task.ngayhethan) : 'Không có'}</div>
                     <div class="status"><i class="fas ${task.dahoanthanh ? 'fa-check-circle text-success' : 'fa-hourglass-half text-warning'}"></i> ${task.dahoanthanh ? 'Đã hoàn thành' : 'Chưa hoàn thành'}</div>
                 `;
 
@@ -71,12 +71,13 @@ function loadTaskDetails(macongviec) {
 
     if (!macongviec) {
         taskInfo.innerHTML = '<p class="text-danger">Mã công việc không hợp lệ.</p>';
-          showWarningAlert("Mã công việc không hợp lệ!");
+        showWarningAlert("Mã công việc không hợp lệ!");
         return;
     }
 
     const taskDetailsModal = document.getElementById('taskDetailsModal');
     const markCompleteBtn = document.getElementById('markCompleteBtn');
+    const editBtn = taskDetailsModal.querySelector('.btn-edit'); // Lấy nút "Sửa"
 
     taskDetailsModal.dataset.macongviec = macongviec;
 
@@ -92,14 +93,16 @@ function loadTaskDetails(macongviec) {
 
             if (!task) {
                 taskInfo.innerHTML = '<p class="text-danger">Không tìm thấy công việc.</p>';
-                  showErrorAlert("Không tìm thấy công việc!");
+                showErrorAlert("Không tìm thấy công việc!");
                 return;
             }
 
             if (task.dahoanthanh) {
                 markCompleteBtn.style.display = 'none';
+                editBtn.style.display = 'none'; // Ẩn nút "Sửa" khi công việc đã hoàn thành
             } else {
                 markCompleteBtn.style.display = 'inline-block';
+                editBtn.style.display = 'inline-block'; // Hiển thị nút "Sửa" khi công việc chưa hoàn thành
             }
 
             taskInfo.innerHTML = `
@@ -133,7 +136,7 @@ function loadTaskDetails(macongviec) {
                             <h6 class="text-muted">
                                 <i class="fas fa-calendar-alt me-2"></i>Ngày hết hạn
                             </h6>
-                            <p class="card-text">${task.ngayhethan ? formatDate(task.ngayhethan) : 'Không có ngày hết hạn'}</p>
+                            <p class="card-text">${task.ngayhethan ? new Date(task.ngayhethan).toLocaleString() : 'Không có ngày hết hạn'}</p>
                         </div>
                         <div class="mb-3">
                             <h6 class="text-muted">
@@ -147,7 +150,7 @@ function loadTaskDetails(macongviec) {
                                 <h6 class="text-muted">
                                     <i class="fas fa-calendar-check me-2"></i>Ngày hoàn thành
                                 </h6>
-                                <p class="card-text">${formatDate(task.ngayhoanthanh)}</p>
+                                <p class="card-text">${new Date(task.ngayhoanthanh).toLocaleString()}</p>
                             </div>` : ''
                         }
                         <div class="mb-3">
@@ -160,7 +163,7 @@ function loadTaskDetails(macongviec) {
                                         ? task.nhacNho.map(time => `
                                             <li class="list-group-item d-flex align-items-center">
                                                 <i class="fas fa-clock me-2 text-primary"></i>
-                                                ${formatDate(time)}
+                                                ${new Date(time).toLocaleString()}
                                             </li>`).join('')
                                         : '<li class="list-group-item text-muted">Không có nhắc nhở</li>'
                                 }
@@ -193,7 +196,7 @@ function loadTaskDetails(macongviec) {
                                         ? task.activityLogs.map(log => `
                                             <li class="list-group-item d-flex align-items-center">
                                                 <i class="fas fa-check-circle me-2 text-info"></i>
-                                                ${log.hanhdong} - <span class="text-muted">${formatDate(log.thoigian)}</span>
+                                                ${log.hanhdong} - <span class="text-muted">${new Date(log.thoigian).toLocaleString()}</span>
                                             </li>`).join('')
                                         : '<li class="list-group-item text-muted">Không có nhật ký hoạt động</li>'
                                 }
@@ -206,10 +209,9 @@ function loadTaskDetails(macongviec) {
         .catch(error => {
             console.error('Lỗi:', error);
             taskInfo.innerHTML = '<p class="text-danger">Lỗi khi tải chi tiết công việc.</p>';
-             showErrorAlert("Lỗi khi tải chi tiết công việc: " + error.message);
+            showErrorAlert("Lỗi khi tải chi tiết công việc: " + error.message);
         });
 }
-
 function setupTaskForm() {
     const taskReminder = document.getElementById("taskReminder");
     const reminderDateDiv = document.getElementById("reminderDateDiv");
@@ -231,16 +233,14 @@ function addTask() {
         method: "POST",
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Lỗi khi thêm công việc!");
-        }
-        return response.json();
-    })
+    .then(response => response.json()) // Server giờ đây luôn trả về JSON
     .then(data => {
         showSuccessAlert("Thêm công việc thành công!");
         bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
-        window.location.reload();
+        // Trì hoãn tải lại trang để người dùng thấy thông báo
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500); // Chờ 1.5 giây trước khi tải lại trang
     })
     .catch(error => {
         console.error("Lỗi:", error);

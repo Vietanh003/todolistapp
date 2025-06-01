@@ -27,6 +27,7 @@ function formatDate(dateString) {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "Ngày không hợp lệ";
     return date.toLocaleString('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
