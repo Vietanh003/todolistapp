@@ -11,90 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/tasks.css">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/profile.css">
     <script>
         window.contextPath = '${pageContext.request.contextPath}';
     </script>
-  <style>
-    body {
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-        min-height: 100vh;
-        display: flex;
-    }
-    #sidebar {
-        width: 250px;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #1e3c72, #2a5298);
-        color: white;
-        position: fixed;
-        top: 56px;
-        transition: transform 0.3s ease-in-out;
-    }
-    #mainContent {
-        margin-left: 250px;
-        padding: 2rem;
-        width: 100%;
-        margin-top: 70px;
-    }
-    .profile-card {
-        max-width: 600px;
-        margin: 0 auto;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 15px;
-        background: white;
-        overflow: hidden;
-    }
-    .profile-header {
-        background: linear-gradient(135deg, #007bff, #00c4b4);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-        position: relative;
-        z-index: 1; 
-    }
-    .profile-body {
-        padding: 2rem;
-        text-align: center;
-        padding-top: 3rem; 
-    }
-    .profile-avatar {
-        width: 150px;
-        height: 150px;
-        border: 5px solid white;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        display: block; /* Đảm bảo ảnh là block để căn giữa */
-        margin: 0 auto 1rem; /* Căn giữa và thêm khoảng cách dưới */
-    }
-    .profile-body h4 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    .profile-body p {
-        font-size: 1rem;
-        color: #6c757d;
-        margin-bottom: 1rem;
-    }
-    .profile-actions {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-    .btn-action {
-        padding: 0.5rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 25px;
-        transition: transform 0.2s;
-    }
-    .btn-action:hover {
-        transform: translateY(-2px);
-    }
-    .modal-content {
-        border-radius: 10px;
-    }
-</style>
 </head>
 <body>
     <%

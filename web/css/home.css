@@ -1,278 +1,263 @@
-/* ✅ Navbar */
+/* Navbar */
 .navbar {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #00c4cc, #00e7d6);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00c4cc, #00e7d6, #0288d1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     position: fixed;
     width: 100%;
     z-index: 1000;
     top: 0;
+    transition: all 0.3s ease;
 }
 
-/* ✅ Navbar Brand */
-.navbar-brand {
+.navbar:hover {
+    transform: translateY(-2px);
+}
+
+/* Navbar Brand */
+.navbar-brand.logo-3d {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: #ffffff !important;
-    font-size: 1.5rem;
-    font-weight: 700;
-    transition: color 0.3s ease;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.navbar-brand:hover {
+.navbar-brand.logo-3d:hover {
     color: #e0f7fa !important;
+    transform: scale(1.05) rotateX(10deg);
 }
 
-/* ✅ Toggle Sidebar Button */
-#toggleSidebar {
-    background-color: #ffffff;
-    border: 1px solid #b2ebf2;
-    color: #00838f;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.logo-text {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
 }
 
-#toggleSidebar:hover {
-    background-color: #b2ebf2;
-    transform: scale(1.05);
+.logo-subtext {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #e0f7fa;
 }
 
-/* ✅ Dropdown */
-.dropdown-toggle {
-    background-color: #ffffff !important;
+/* Toggle Sidebar Button */
+.toggle-3d {
+    background: linear-gradient(145deg, #ffffff, #e0f7fa);
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-3d:hover {
+    transform: translateY(-3px) rotate(5deg);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 3D Icons */
+.fa-3d-icon {
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.fa-3d-icon:hover {
+    transform: translateZ(10px) scale(1.2);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Dropdown */
+.btn-3d {
+    background: linear-gradient(145deg, #ffffff, #e0f7fa);
     color: #00838f !important;
-    border: 1px solid #b2ebf2;
-    border-radius: 8px;
-    padding: 8px 16px;
-    transition: background-color 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
-.dropdown-toggle:hover {
-    background-color: #b2ebf2 !important;
+.btn-3d:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-.dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-    max-height: 300px;
-    overflow-y: auto;
+.dropdown-3d {
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(145deg, #ffffff, #f5f5f5);
+    transition: transform 0.3s ease;
+}
+
+.dropdown-3d.show {
+    transform: scale(1.02);
 }
 
 .dropdown-item {
-    padding: 10px 20px;
+    padding: 12px 24px;
     color: #00838f;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .dropdown-item:hover {
     background-color: #e0f7fa;
+    transform: translateX(5px);
 }
 
-/* ✅ Notification */
+/* Notification */
 #notificationDropdown {
-    background-color: #ffffff;
-    color: #00838f;
     border-radius: 50%;
-    padding: 10px;
-    transition: background-color 0.3s ease;
+    padding: 12px;
 }
 
-#notificationDropdown:hover {
-    background-color: #b2ebf2;
-}
-
-#notificationCount {
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    background-color: #ff5252;
-}
-
-/* ✅ User Section */
-#loginButton {
-    background-color: #ffffff;
-    color: #00838f;
-    border: 1px solid #b2ebf2;
-    border-radius: 8px;
-    padding: 8px 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-#loginButton:hover {
-    background-color: #b2ebf2;
-    transform: scale(1.05);
-}
-
-#userDropdown {
-    background-color: #ffffff;
-    color: #00838f;
-    border: 1px solid #b2ebf2;
-    border-radius: 8px;
-    padding: 6px 12px;
-}
-
-#userDropdown img {
-    border: 2px solid #b2ebf2;
-}
-
-#userDropdown:hover {
-    background-color: #b2ebf2;
-}
-
-/* ✅ Modal */
-.modal-content {
+.badge-3d {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    background: linear-gradient(145deg, #ff5252, #ff1744);
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* User Section */
+#loginButton, #userDropdown {
+    padding: 8px 16px;
+}
+
+.avatar-3d {
+    border: 3px solid #00c4cc;
+    border-radius: 50%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-3d:hover {
+    transform: rotate(5deg) scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal */
+.modal-3d {
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transform: perspective(1000px) rotateX(0deg);
+    transition: transform 0.3s ease;
+}
+
+.modal-3d.show {
+    transform: perspective(1000px) rotateX(5deg);
 }
 
 .modal-header {
-    background-color: #e0f7fa;
+    background: linear-gradient(145deg, #e0f7fa, #b2ebf2);
     border-bottom: none;
 }
 
 .modal-title {
     color: #00838f;
-    font-weight: 600;
+    font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
-.modal-body {
-    padding: 20px;
-}
-
-#userAvatar {
-    border: 3px solid #b2ebf2;
-}
-
-#userName {
-    color: #00838f;
-    font-weight: 500;
-}
-
-#userEmail, #userCreatedAt {
-    color: #4b636e;
-}
-
-/* ✅ Modal Footer */
-.modal-footer {
-    border-top: none;
-}
-
-.modal-footer .btn-secondary {
-    background-color: #80deea;
-    border: none;
-    border-radius: 8px;
-    color: #00838f;
-    transition: background-color 0.3s ease;
-}
-
-.modal-footer .btn-secondary:hover {
-    background-color: #4dd0e1;
-}
-
-/* ✅ Sidebar */
+/* Sidebar */
 .sidebar {
-    width: 250px;
-    background: #e0f7fa;
-    color: #333333;
-    padding: 20px;
-    height: calc(100vh - 56px); /* Trừ chiều cao của navbar */
+    width: 260px;
+    background: linear-gradient(180deg, #e0f7fa, #b2ebf2);
+    padding: 25px;
+    padding-top: 40px; 
+    height: calc(100vh - 80px); 
     position: fixed;
-    top: 56px; /* Đẩy xuống dưới Navbar */
+    top: 80px; 
     left: 0;
-    transition: transform 0.3s ease-in-out;
-    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
-    border-right: 1px solid #b2ebf2;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    border-right: 2px solid #00c4cc;
+    z-index: 999; 
 }
 
-/* ✅ Ẩn Sidebar */
 .sidebar.collapsed {
     transform: translateX(-100%);
 }
 
-/* ✅ Ghim Sidebar */
 .sidebar.pinned {
     transform: translateX(0);
 }
 
-/* ✅ Nội dung chính */
-.main-content {
-    margin-left: 250px;
-    padding: 20px;
-    transition: margin-left 0.3s ease-in-out;
-    margin-top: 70px; /* Để không bị Navbar che */
-}
-
-/* ✅ Khi Sidebar đóng */
-.main-content.expanded {
-    margin-left: 0;
-}
-
-/* ✅ Nút sidebar */
-.sidebar button {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    background-color: #80deea;
-    color: #333333;
+/* Sidebar Buttons */
+.sidebar .btn-3d {
+    background: linear-gradient(145deg, #80deea, #4dd0e1);
     border: none;
-    border-radius: 8px;
-    padding: 12px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    text-align: left;
-}
-
-.sidebar button:hover {
-    background-color: #4dd0e1;
-    transform: translateX(5px);
-}
-
-.sidebar button i {
-    margin-right: 10px;
-}
-
-/* ✅ Nút ghim */
-.sidebar .btn-pin {
-    background: linear-gradient(135deg, #fff176, #ffeb3b);
-    border: 1px solid #ffee58;
-    color: #333333;
     border-radius: 12px;
-    padding: 12px 16px;
-    position: relative;
-    overflow: hidden;
+    padding: 14px;
+    text-align: left;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.sidebar .btn-pin:hover {
-    background: linear-gradient(135deg, #ffeb3b, #fbc02d);
-    transform: translateX(5px) scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.sidebar .btn-3d:hover {
+    transform: translateY(-3px) translateX(5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.sidebar .btn-pin .pin-icon {
+.sidebar .btn-3d i {
+    margin-right: 12px;
     transition: transform 0.3s ease;
 }
 
-.sidebar .btn-pin:hover .pin-icon {
-    transform: rotate(45deg);
+.sidebar .btn-3d:hover i {
+    transform: rotate(10deg) scale(1.2);
 }
 
-/* ✅ Notification */
+/* Pin Button */
+.btn-pin.btn-3d {
+    background: linear-gradient(135deg, #fff176, #ffeb3b);
+    border: none;
+    border-radius: 15px;
+    padding: 14px 18px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-pin.btn-3d:hover {
+    background: linear-gradient(135deg, #ffeb3b, #fbc02d);
+    transform: translateY(-3px) rotate(3deg);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.pin-icon-3d {
+    transition: transform 0.3s ease;
+}
+
+.btn-pin.btn-3d:hover .pin-icon-3d {
+    transform: rotate(45deg) scale(1.2);
+}
+
+/* Notification List */
 #notification-list .dropdown-item {
-    padding: 10px;
+    padding: 12px;
     border-bottom: 1px solid #b2ebf2;
+    transition: transform 0.3s ease;
+}
+
+#notification-list .dropdown-item:hover {
+    transform: translateX(5px);
 }
 
 #notification-list .dropdown-item:last-child {
     border-bottom: none;
 }
 
-/* ✅ Shake animation */
+/* Shake Animation */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+    20%, 40%, 60%, 80% { transform: translateX(6px); }
 }
-
-/* Trong home.css */
 .main-content {
     padding: 20px;
     margin-top: 70px; 
@@ -329,4 +314,38 @@ canvas#taskStatsChart {
 .quote-container {
     margin-top: 20px;
     border-left: 4px solid #4caf50;
+}
+/* Main Content */
+.main-content {
+    margin-left: 260px; 
+    padding: 30px;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    min-height: calc(100vh - 60px); 
+    transition: margin-left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 60px; /* Ensure content is below navbar */
+    transform: perspective(1000px) rotateX(0deg);
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* Heading Styling */
+.main-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00838f;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #00c4cc, #0288d1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.main-content h2:hover {
+    transform: translateY(-3px) scale(1.02);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

@@ -1,229 +1,324 @@
+/* Task Grid */
 .task-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
+    padding: 20px;
+    transition: margin-left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
+/* Adjust task grid margin based on sidebar state */
+.main-content .task-grid {
+    margin-left: 260px; /* Matches sidebar width */
+}
+
+.main-content.expanded .task-grid {
+    margin-left: 0;
+}
+
+/* Task Card */
 .task-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #ffffff, #f5f5f5);
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 6px solid transparent;
+    transition: all 0.3s ease;
     cursor: pointer;
-    border-left: 5px solid transparent;
+    transform: perspective(1000px) rotateX(0deg);
 }
 
 .task-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: perspective(1000px) rotateX(3deg) translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .task-card.completed {
-    background: #e3f2fd;
-    opacity: 0.85;
+    background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+    opacity: 0.9;
+    transform: perspective(1000px) rotateX(1deg);
 }
 
+/* Priority Badges */
 .task-card .priority {
     display: inline-block;
-    padding: 5px 12px;
-    border-radius: 12px;
+    padding: 6px 14px;
+    border-radius: 15px;
     font-size: 14px;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.task-card .priority:hover {
+    transform: scale(1.1);
 }
 
 .priority-thap {
-    background: #28a745;
+    background: linear-gradient(135deg, #28a745, #1c7430);
     border-left-color: #28a745;
 }
 
 .priority-trung-binh {
-    background: #999900;
-    border-left-color: #999900;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border-left-color: #ffc107;
 }
 
 .priority-cao {
-    background: #dc3545;
+    background: linear-gradient(135deg, #dc3545, #b21f2d);
     border-left-color: #dc3545;
 }
 
+/* Task Card Content */
 .task-card .title {
     font-size: 18px;
-    font-weight: bold;
-    margin-top: 10px;
+    font-weight: 700;
+    margin-top: 12px;
+    color: #00838f;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.task-card .due-date, 
+.task-card .due-date,
 .task-card .status {
     font-size: 14px;
-    color: #6c757d;
+    color: #4b636e;
+    margin-top: 8px;
 }
-   /* Tùy chỉnh giao diện chi tiết công việc */
-        .task-details .card {
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .task-details .card-header {
-            background-color: #007bff;
-            border-bottom: none;
-            padding: 15px 20px;
-        }
-        .task-details .card-header h5 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-        .task-details .card-body {
-            padding: 20px;
-        }
-        .task-details .card-body h6 {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            color: #6c757d;
-        }
-        .task-details .card-body p {
-            margin-bottom: 0;
-            font-size: 0.95rem;
-        }
-        .task-details .list-group-item {
-            border: 1px solid #e9ecef;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            padding: 10px 15px;
-        }
-        .task-details .list-group-item i {
-            font-size: 1rem;
-        }
-        .task-details .badge {
-            font-size: 0.85rem;
-            padding: 5px 10px;
-        }
-        /* Tùy chỉnh nút trong modal-header */
-        .modal-header .btn-action {
-            margin-left: 10px;
-            transition: all 0.3s ease;
-        }
-        .modal-header .btn-action:hover {
-            transform: scale(1.1);
-        }
-        .modal-header .btn-edit {
-            background-color: #ffc107;
-            border-color: #ffc107;
-            color: #fff;
-        }
-        .modal-header .btn-delete {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: #fff;
-        }
-        .modal-header .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: #fff;
-        }
-        .modal-header .btn-success:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-            transform: scale(1.1);
-        }
-        /* Đảm bảo modal hiển thị phía trên mọi thành phần */
-        .modal.fade {
-            z-index: 1055 !important;
-        }
-        .modal-backdrop {
-            z-index: 1050 !important;
-        }
-        #addCategoryModal, #addTaskModal, #taskDetailsModal, #editTaskModal {
-            z-index: 1060 !important;
-        }
-        /* Modal đẹp hơn */
-        .modal-content {
-            border-radius: 15px;
-        }
-        .modal-header {
-            background: #007bff;
-            color: white;
-            border-radius: 15px 15px 0 0;
-        }
-        .modal-body {
-            background: #f8f9fa;
-        }
-        .form-label {
-            font-weight: bold;
-            color: #343a40;
-        }
-        .form-control, .form-select {
-            border-radius: 8px;
-        }
-        .modal-footer {
-            border-top: none;
-        }
-        /* Thêm vào file tasks.css */
 
-/* Phần lọc chung */
+/* Task Details */
+.task-details .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: perspective(1000px) rotateX(0deg);
+    transition: transform 0.3s ease;
+}
+
+.task-details .card:hover {
+    transform: perspective(1000px) rotateX(3deg);
+}
+
+.task-details .card-header {
+    background: linear-gradient(135deg, #00c4cc, #0288d1);
+    border-bottom: none;
+    padding: 15px 20px;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.task-details .card-header h5 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.task-details .card-body {
+    padding: 25px;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+}
+
+.task-details .card-body h6 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: #4b636e;
+    font-weight: 600;
+}
+
+.task-details .card-body p {
+    font-size: 0.95rem;
+    color: #343a40;
+}
+
+.task-details .list-group-item {
+    border: 1px solid #b2ebf2;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    padding: 12px 18px;
+    transition: transform 0.3s ease;
+}
+
+.task-details .list-group-item:hover {
+    transform: translateX(5px);
+    background: #e0f7fa;
+}
+
+.task-details .list-group-item i {
+    font-size: 1rem;
+    margin-right: 8px;
+}
+
+.task-details .badge {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Header Buttons */
+.modal-header .btn-action {
+    margin-left: 12px;
+    border-radius: 10px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.modal-header .btn-action:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header .btn-edit {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border: none;
+    color: white;
+}
+
+.modal-header .btn-delete {
+    background: linear-gradient(135deg, #dc3545, #b21f2d);
+    border: none;
+    color: white;
+}
+
+.modal-header .btn-success {
+    background: linear-gradient(135deg, #28a745, #1c7430);
+    border: none;
+    color: white;
+}
+
+.modal-header .btn-success:hover {
+    background: linear-gradient(135deg, #1c7430, #175a25);
+}
+
+/* Modal Styling */
+.modal.fade {
+    z-index: 1055 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
+#addCategoryModal, #addTaskModal, #taskDetailsModal, #editTaskModal {
+    z-index: 1060 !important;
+}
+
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transform: perspective(1000px) rotateX(0deg);
+    transition: transform 0.3s ease;
+}
+
+.modal-content.show {
+    transform: perspective(1000px) rotateX(3deg);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #00c4cc, #0288d1);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.modal-body {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    padding: 25px;
+}
+
+.form-label {
+    font-weight: 700;
+    color: #00838f;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #b2ebf2;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #00c4cc;
+    box-shadow: 0 0 8px rgba(0, 196, 204, 0.3);
+}
+
+.modal-footer {
+    border-top: none;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+}
+
+/* Filter Section */
 .filter-section {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 30px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: margin-left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.main-content .filter-section {
+    margin-left: 260px; /* Matches sidebar width */
+}
+
+.main-content.expanded .filter-section {
+    margin-left: 0;
 }
 
 .filter-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .filter-label {
-    font-weight: bold;
-    color: #343a40;
+    font-weight: 700;
+    color: #00838f;
     font-size: 0.9rem;
     text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Nút lọc chung */
+/* Filter Buttons */
 .filter-buttons .btn {
-    border-radius: 20px;
-    padding: 8px 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
     border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
 .filter-buttons .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .filter-buttons .btn.active {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Nút lọc thời gian */
+/* Time Filter Buttons */
 .btn-time-filter {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: linear-gradient(135deg, #00c4cc, #0288d1);
     color: white;
 }
 
 .btn-time-filter:hover {
-    background: linear-gradient(135deg, #0056b3, #003f87);
+    background: linear-gradient(135deg, #0288d1, #01579b);
 }
 
 .btn-time-filter.active {
-    background: linear-gradient(135deg, #003f87, #002b5c);
+    background: linear-gradient(135deg, #01579b, #003f87);
 }
 
-/* Nút lọc mức độ */
+/* Priority Filter Buttons */
 .btn-priority-filter {
     background: linear-gradient(135deg, #6c757d, #5a6268);
     color: white;
@@ -238,15 +333,15 @@
 }
 
 .btn-priority-low {
-    background: linear-gradient(135deg, #28a745, #218838);
+    background: linear-gradient(135deg, #28a745, #1c7430);
 }
 
 .btn-priority-low:hover {
-    background: linear-gradient(135deg, #218838, #1c7430);
+    background: linear-gradient(135deg, #1c7430, #175a25);
 }
 
 .btn-priority-low.active {
-    background: linear-gradient(135deg, #1c7430, #175a25);
+    background: linear-gradient(135deg, #175a25, #134b1e);
 }
 
 .btn-priority-medium {
@@ -262,18 +357,18 @@
 }
 
 .btn-priority-high {
-    background: linear-gradient(135deg, #dc3545, #c82333);
+    background: linear-gradient(135deg, #dc3545, #b21f2d);
 }
 
 .btn-priority-high:hover {
-    background: linear-gradient(135deg, #c82333, #b21f2d);
-}
-
-.btn-priority-high.active {
     background: linear-gradient(135deg, #b21f2d, #9c1b26);
 }
 
-/* Nút lọc trạng thái */
+.btn-priority-high.active {
+    background: linear-gradient(135deg, #9c1b26, #871821);
+}
+
+/* Status Filter Buttons */
 .btn-status-filter {
     background: linear-gradient(135deg, #17a2b8, #138496);
     color: white;
@@ -300,13 +395,13 @@
 }
 
 .btn-status-complete {
-    background: linear-gradient(135deg, #28a745, #218838);
+    background: linear-gradient(135deg, #28a745, #1c7430);
 }
 
 .btn-status-complete:hover {
-    background: linear-gradient(135deg, #218838, #1c7430);
+    background: linear-gradient(135deg, #1c7430, #175a25);
 }
 
 .btn-status-complete.active {
-    background: linear-gradient(135deg, #1c7430, #175a25);
+    background: linear-gradient(135deg, #175a25, #134b1e);
 }

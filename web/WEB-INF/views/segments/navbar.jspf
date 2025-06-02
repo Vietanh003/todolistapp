@@ -2,66 +2,69 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <button class="btn btn-light me-2" id="toggleSidebar">
-            <i class="fas fa-bars"></i>
+        <button class="btn btn-light me-2 toggle-3d" id="toggleSidebar">
+            <i class="fas fa-bars fa-3d-icon"></i>
         </button>
-        <a class="navbar-brand fw-bold" href="#">ToPlan</a>
+        <a class="navbar-brand fw-bold logo-3d" href="#">
+            <span class="logo-text">ToPlan</span>
+            <span class="logo-subtext">Your Task Companion</span>
+        </a>
         <div class="dropdown mx-3">
-            <button class="btn btn-light dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown">
-                Danh mục công việc
+            <button class="btn btn-light dropdown-toggle btn-3d" type="button" id="categoryDropdown" data-bs-toggle="dropdown">
+                <i class="fas fa-list-ul me-2"></i> Danh mục công việc
             </button>
-            <ul class="dropdown-menu" id="category-list">
+            <ul class="dropdown-menu dropdown-3d" id="category-list">
                 <li><a class="dropdown-item text-muted">Đang tải...</a></li>
             </ul>
         </div>
         <div class="ms-auto d-flex align-items-center" id="userSection">
-            <!-- Biểu tượng thông báo -->
+            <!-- Notification -->
             <div class="dropdown me-3">
-                <button class="btn btn-light position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown">
-                    <i class="fas fa-bell"></i>
-                    <span id="notificationCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                <button class="btn btn-light btn-3d position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell fa-3d-icon"></i>
+                    <span id="notificationCount" class="badge-3d">0</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end" id="notification-list" style="max-height: 300px; overflow-y: auto;">
+                <ul class="dropdown-menu dropdown-menu-end dropdown-3d" id="notification-list" style="max-height: 300px; overflow-y: auto;">
                     <li><a class="dropdown-item text-muted">Đang tải thông báo...</a></li>
                 </ul>
             </div>
-            <!-- Hiển thị nút đăng nhập nếu chưa đăng nhập -->
-            <a href="login.jsp" class="btn btn-light" id="loginButton" style="display: none;">
-                Đăng nhập
+            <!-- Login Button -->
+            <a href="login.jsp" class="btn btn-light btn-3d" id="loginButton" style="display: none;">
+                <i class="fas fa-sign-in-alt me-2"></i> Đăng nhập
             </a>
-            <!-- Nếu đã đăng nhập thì hiển thị dropdown người dùng -->
+            <!-- User Dropdown -->
             <div class="dropdown" id="userDropdownContainer" style="display: none;">
-                <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                    <img id="navbarAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle me-2" width="40" height="40" alt="Avatar">
+                <button class="btn btn-light btn-3d dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                    <img id="navbarAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="avatar-3d me-2" alt="Avatar">
                     <span id="navbarUsername">Người dùng</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#" onclick="showUserInfo(); return false;">🔧 Xem thông tin</a></li>
-                    <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(); return false;">🚪 Đăng xuất</a></li>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-3d">
+                    <li><a class="dropdown-item" href="#" onclick="showUserInfo(); return false;"><i class="fas fa-user-cog me-2"></i> Xem thông tin</a></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="confirmLogout(); return false;"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </nav>
 
-<!-- Modal hiển thị thông tin người dùng -->
+<!-- User Info Modal -->
 <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content modal-3d">
             <div class="modal-header">
                 <h5 class="modal-title" id="userInfoModalLabel">Thông tin tài khoản</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="userInfoContent">
                 <div class="text-center">
-                    <img id="userAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="rounded-circle mb-3" width="100" height="100" alt="Avatar">
+                    <img id="userAvatar" src="${pageContext.request.contextPath}/img/user-avatar.png" class="avatar-3d mb-3" alt="Avatar">
                     <h5 id="userName">Người dùng</h5>
                     <p id="userEmail" class="text-muted">Không có email</p>
                     <p id="userCreatedAt" class="text-muted">Ngày tạo: Không có thông tin</p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary btn-3d" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
