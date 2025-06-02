@@ -5,16 +5,55 @@
 
 
 // task.js
-function loadTasks(madanhmuc = null) {
+let currentFilter = {
+    madanhmuc: null,
+    mucdouutien: '',
+    trangthai: '',
+    thoigian: 'week'
+};
+function filterTasks(timeFilter) {
+    currentFilter.thoigian = timeFilter;
+    document.querySelectorAll('.btn-time-filter').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    loadTasks();
+}
+
+function filterTasksByPriority(priority) {
+    currentFilter.mucdouutien = priority;
+    document.querySelectorAll('.btn-priority-filter').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    loadTasks();
+}
+
+function filterTasksByStatus(status) {
+    currentFilter.trangthai = status;
+    document.querySelectorAll('.btn-status-filter').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    loadTasks();
+}
+
+function loadTasks() {
+    const { madanhmuc, mucdouutien, trangthai, thoigian } = currentFilter;
+
     const taskGrid = document.getElementById('taskGrid');
     if (!taskGrid) {
         console.log('Phần tử taskGrid không tồn tại, bỏ qua loadTasks');
         return;
     }
 
-    taskGrid.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Đang tải...</span></div></div>';
+    taskGrid.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    `;
 
-    const url = madanhmuc ? `tasks?action=getTasks&madanhmuc=${madanhmuc}` : 'tasks?action=getTasks';
+    let url = `${window.contextPath}/tasks?action=getTasks`;
+    if (madanhmuc) url += `&madanhmuc=${encodeURIComponent(madanhmuc)}`;
+    if (mucdouutien && mucdouutien !== 'all') url += `&mucdouutien=${encodeURIComponent(mucdouutien)}`;
+    if (trangthai && trangthai !== 'all') url += `&trangthai=${encodeURIComponent(trangthai)}`;
+    if (thoigian && thoigian !== 'all') url += `&thoigian=${encodeURIComponent(thoigian)}`;
 
     fetch(url)
         .then(response => {
@@ -29,7 +68,7 @@ function loadTasks(madanhmuc = null) {
             taskGrid.innerHTML = '';
 
             if (tasks.length === 0) {
-                taskGrid.innerHTML = '<p class="text-muted text-center">Bạn chưa có công việc nào. Nhấn "Thêm Công Việc" để bắt đầu!</p>';
+                taskGrid.innerHTML = `<p class="text-muted text-center">Bạn chưa có công việc nào. Nhấn "Thêm Công Việc" để bắt đầu!</p>`;
                 return;
             }
 
@@ -48,16 +87,25 @@ function loadTasks(madanhmuc = null) {
                 taskCard.innerHTML = `
                     <div class="priority ${priorityClass}">${task.mucdouutien || 'Không xác định'}</div>
                     <div class="title">${task.tieude || 'Không có tiêu đề'}</div>
-                   <div class="due-date"><i class="fas fa-calendar-alt"></i> Hạn: ${task.ngayhethan ? formatDate(task.ngayhethan) : 'Không có'}</div>
-                    <div class="status"><i class="fas ${task.dahoanthanh ? 'fa-check-circle text-success' : 'fa-hourglass-half text-warning'}"></i> ${task.dahoanthanh ? 'Đã hoàn thành' : 'Chưa hoàn thành'}</div>
+                    <div class="due-date">
+                        <i class="fas fa-calendar-alt"></i> 
+                        Hạn: ${task.ngayhethan ? formatDate(task.ngayhethan) : 'Không có'}
+                    </div>
+                    <div class="status">
+                        <i class="fas ${task.dahoanthanh ? 'fa-check-circle text-success' : 'fa-hourglass-half text-warning'}"></i> 
+                        ${task.dahoanthanh ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
+                    </div>
                 `;
 
                 taskGrid.appendChild(taskCard);
             });
         })
-       .catch(error => {
+        .catch(error => {
             console.error('Lỗi:', error);
-            taskGrid.innerHTML = `<p class="text-danger text-center">Lỗi khi tải danh sách công việc: ${error.message}</p>`;
+            taskGrid.innerHTML = `
+                <p class="text-danger text-center">
+                    Lỗi khi tải danh sách công việc: ${error.message}
+                </p>`;
             showErrorAlert(error.message, "Lỗi khi tải công việc");
         });
 }
@@ -338,7 +386,127 @@ function markTaskAsCompleted(macongviec) {
         });
     });
 }
+function loadStatsByPriority() {
+    fetch(`${window.contextPath}/tasks?action=getStatsByPriority`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Lỗi:", data.error);
+                return;
+            }
 
+            // Kiểm tra nếu data là mảng và không rỗng
+            if (!Array.isArray(data) || data.length === 0) {
+                console.warn("Không có dữ liệu thống kê theo mức độ ưu tiên.");
+                const ctx = document.getElementById('taskPriorityChart');
+                if (ctx) ctx.style.display = 'none'; // Ẩn canvas nếu không có dữ liệu
+                return;
+            }
+
+            // Tách dữ liệu
+            const labels = data.map(item => item.priority || 'Không xác định');
+            const completed = data.map(item => item.completed || 0);
+            const incomplete = data.map(item => item.incomplete || 0);
+
+            // Cập nhật bảng
+            const tbody = document.querySelector('#taskPriorityTable tbody');
+            tbody.innerHTML = ''; // Xóa dữ liệu cũ
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.priority || 'Không xác định'}</td>
+                    <td>${item.completed || 0}</td>
+                    <td>${item.incomplete || 0}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Tạo biểu đồ
+            const ctx = document.getElementById('taskPriorityChart').getContext('2d');
+
+            if (window.taskPriorityChart) {
+                window.taskPriorityChart.destroy();
+            }
+
+            window.taskPriorityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Hoàn thành',
+                            data: completed,
+                            backgroundColor: '#4caf50'
+                        },
+                        {
+                            label: 'Chưa hoàn thành',
+                            data: incomplete,
+                            backgroundColor: '#ff9800'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Số lượng công việc theo mức độ ưu tiên'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(err => {
+            console.error('Lỗi khi tải thống kê theo mức độ:', err);
+        });
+}
+
+function loadMonthlyStats() {
+ fetch(`${window.contextPath}/tasks?action=getMonthlyStats`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Lỗi:", data.error);
+                return;
+            }
+
+            const ctx = document.getElementById('taskStatsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Đã hoàn thành', 'Chưa hoàn thành'],
+                    datasets: [{
+                        data: [data.completed, data.incomplete],
+                        backgroundColor: ['#4caf50', '#ff9800']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Thống kê công việc tháng này'
+                        }
+                    }
+                }
+            });
+        })
+        .catch(err => {
+            console.error("Lỗi khi tải thống kê:", err);
+        });
+}
 document.addEventListener('submit', function(event) {
     if (event.target.id === 'editTaskForm') {
         event.preventDefault();

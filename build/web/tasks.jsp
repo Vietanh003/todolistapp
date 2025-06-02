@@ -26,17 +26,53 @@
     <jsp:include page="/WEB-INF/views/segments/sidebar.jspf" />
      <jsp:include page="/WEB-INF/views/segments/footer.jspf" />
 
-    <div class="main-content" id="mainContent">
-        <h2 class="mb-4">Danh Sách Công Việc</h2>
-        <div class="task-grid" id="taskGrid">
-            <div class="text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Đang tải...</span>
-                </div>
+  <div class="main-content" id="mainContent">
+    <h2 class="mb-4">Danh Sách Công Việc</h2>
+
+    <!-- Phần lọc -->
+    <div class="filter-section mb-4">
+        <!-- Lọc theo thời gian -->
+        <div class="filter-group me-3">
+            <label class="filter-label">Thời gian:</label>
+            <div class="btn-group filter-buttons">
+                <button type="button" class="btn btn-time-filter active" onclick="filterTasks('week')">Tuần này</button>
+                <button type="button" class="btn btn-time-filter" onclick="filterTasks('today')">Hôm nay</button>
+                <button type="button" class="btn btn-time-filter" onclick="filterTasks('month')">Tháng này</button>
+                <button type="button" class="btn btn-time-filter" onclick="filterTasks('all')">Tất cả</button>
+            </div>
+        </div>
+
+        <!-- Lọc theo mức độ -->
+        <div class="filter-group me-3">
+            <label class="filter-label">Mức độ:</label>
+            <div class="btn-group filter-buttons">
+                <button type="button" class="btn btn-priority-filter active" onclick="filterTasksByPriority('all')">Tất cả</button>
+                <button type="button" class="btn btn-priority-filter btn-priority-low" onclick="filterTasksByPriority('Thấp')">Thấp</button>
+                <button type="button" class="btn btn-priority-filter btn-priority-medium" onclick="filterTasksByPriority('Trung Bình')">Trung Bình</button>
+                <button type="button" class="btn btn-priority-filter btn-priority-high" onclick="filterTasksByPriority('Cao')">Cao</button>
+            </div>
+        </div>
+
+        <!-- Lọc theo trạng thái -->
+        <div class="filter-group">
+            <label class="filter-label">Trạng thái:</label>
+            <div class="btn-group filter-buttons">
+                <button type="button" class="btn btn-status-filter active" onclick="filterTasksByStatus('all')">Tất cả</button>
+                <button type="button" class="btn btn-status-filter btn-status-incomplete" onclick="filterTasksByStatus('false')">Chưa hoàn thành</button>
+                <button type="button" class="btn btn-status-filter btn-status-complete" onclick="filterTasksByStatus('true')">Đã hoàn thành</button>
             </div>
         </div>
     </div>
 
+    <!-- Hiển thị danh sách công việc -->
+    <div class="task-grid" id="taskGrid">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Modal Thêm Danh Mục -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true" data-bs-backdrop="false">
         <div class="modal-dialog modal-dialog-centered">

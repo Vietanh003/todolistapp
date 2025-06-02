@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
                  maxFileSize = 1024 * 1024 * 10,      // 10MB
@@ -54,64 +55,43 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         response.setCharacterEncoding("UTF-8");
 
         if ("getTasks".equals(action)) {
-            try {
-                String madanhmucStr = request.getParameter("madanhmuc");
-                Integer madanhmuc = (madanhmucStr != null && !madanhmucStr.isEmpty()) ? Integer.parseInt(madanhmucStr) : null;
-                List<Task> tasks = taskDAO.getTasks(user.getMaNguoiDung(), madanhmuc);
-                response.getWriter().write(gson.toJson(tasks));
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Mã danh mục không hợp lệ.\"}");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"Lỗi khi lấy danh sách công việc: " + e.getMessage() + "\"}");
-            }
-        } else if ("getCategoryIdsAndNames".equals(action)) {
-            List<CategoryDAO.CategoryIdAndName> categoryList = categoryDAO.getCategoryIdsAndNames(user.getMaNguoiDung());
-            response.getWriter().write(gson.toJson(categoryList));
-        } else if ("getCategories".equals(action)) {
-            List<Category> categories = categoryDAO.getCategories(user.getMaNguoiDung());
-            response.getWriter().write(gson.toJson(categories));
-        } else if ("getTaskDetails".equals(action)) {
-            try {
-                String macongviecStr = request.getParameter("macongviec");
-                if (macongviecStr == null || macongviecStr.isEmpty()) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ.\"}");
-                    return;
-                }
+    try {
+        String madanhmucStr = request.getParameter("madanhmuc");
+        String mucdouutien = request.getParameter("mucdouutien");
+        String trangthai = request.getParameter("trangthai");
+        String thoigian = request.getParameter("thoigian");
 
-                int macongviec = Integer.parseInt(macongviecStr);
-                Task task = taskDAO.getTaskDetails(macongviec);
+        Integer madanhmuc = (madanhmucStr != null && !madanhmucStr.isEmpty()) ? Integer.parseInt(madanhmucStr) : null;
 
-                if (task == null) {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().write("{\"error\": \"Không tìm thấy công việc.\"}");
-                } else {
-                    response.getWriter().write(gson.toJson(task));
-                }
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Mã công việc phải là số nguyên.\"}");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"Lỗi khi lấy chi tiết công việc: " + e.getMessage() + "\"}");
-            }
-        } else {
-            try {
-                // Mặc định: lấy tất cả công việc và danh mục để hiển thị trên tasks.jsp
-                List<Task> tasks = taskDAO.getTasks(user.getMaNguoiDung(), null); // Lấy tất cả công việc
-                List<Category> categories = categoryDAO.getCategories(user.getMaNguoiDung());
-                request.setAttribute("tasks", tasks);
-                request.setAttribute("categories", categories);
-                request.getRequestDispatcher("/tasks.jsp").forward(request, response);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                throw new ServletException("Lỗi khi lấy dữ liệu: " + e.getMessage(), e);
-            }
-        }
+        List<Task> tasks = taskDAO.getTasks(user.getMaNguoiDung(), madanhmuc, mucdouutien, trangthai, thoigian);
+        response.getWriter().write(gson.toJson(tasks));
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().write("{\"error\": \"Lỗi khi lấy danh sách công việc: " + e.getMessage() + "\"}");
+    }
+ } else if ("getMonthlyStats".equals(action)) {
+    try {
+        Map<String, Integer> stats = taskDAO.getMonthlyTaskStats(user.getMaNguoiDung());
+        response.getWriter().write(gson.toJson(stats));
+    } catch (SQLException e) {
+        e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.getWriter().write("{\"error\": \"Lỗi khi lấy thống kê: " + e.getMessage() + "\"}");
+    }
+} else if ("getStatsByPriority".equals(action)) {
+    try {
+        List<Map<String, Object>> stats = taskDAO.getTaskStatsByPriority(user.getMaNguoiDung());
+        response.setContentType("application/json");
+        response.getWriter().write(gson.toJson(stats));
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.setStatus(500);
+        response.getWriter().write("{\"error\":\"Lỗi khi lấy thống kê theo mức độ.\"}");
+    }
+}
+
+
     } catch (Exception e) {
         e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

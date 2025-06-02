@@ -161,4 +161,152 @@
         .modal-footer {
             border-top: none;
         }
-        
+        /* Thêm vào file tasks.css */
+
+/* Phần lọc chung */
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-label {
+    font-weight: bold;
+    color: #343a40;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+/* Nút lọc chung */
+.filter-buttons .btn {
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.filter-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.filter-buttons .btn.active {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Nút lọc thời gian */
+.btn-time-filter {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.btn-time-filter:hover {
+    background: linear-gradient(135deg, #0056b3, #003f87);
+}
+
+.btn-time-filter.active {
+    background: linear-gradient(135deg, #003f87, #002b5c);
+}
+
+/* Nút lọc mức độ */
+.btn-priority-filter {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+}
+
+.btn-priority-filter:hover {
+    background: linear-gradient(135deg, #5a6268, #484f55);
+}
+
+.btn-priority-filter.active {
+    background: linear-gradient(135deg, #484f55, #363b40);
+}
+
+.btn-priority-low {
+    background: linear-gradient(135deg, #28a745, #218838);
+}
+
+.btn-priority-low:hover {
+    background: linear-gradient(135deg, #218838, #1c7430);
+}
+
+.btn-priority-low.active {
+    background: linear-gradient(135deg, #1c7430, #175a25);
+}
+
+.btn-priority-medium {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.btn-priority-medium:hover {
+    background: linear-gradient(135deg, #e0a800, #c69500);
+}
+
+.btn-priority-medium.active {
+    background: linear-gradient(135deg, #c69500, #ab8300);
+}
+
+.btn-priority-high {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.btn-priority-high:hover {
+    background: linear-gradient(135deg, #c82333, #b21f2d);
+}
+
+.btn-priority-high.active {
+    background: linear-gradient(135deg, #b21f2d, #9c1b26);
+}
+
+/* Nút lọc trạng thái */
+.btn-status-filter {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.btn-status-filter:hover {
+    background: linear-gradient(135deg, #138496, #0f6f82);
+}
+
+.btn-status-filter.active {
+    background: linear-gradient(135deg, #0f6f82, #0b5a6e);
+}
+
+.btn-status-incomplete {
+    background: linear-gradient(135deg, #fd7e14, #e06c00);
+}
+
+.btn-status-incomplete:hover {
+    background: linear-gradient(135deg, #e06c00, #c35f00);
+}
+
+.btn-status-incomplete.active {
+    background: linear-gradient(135deg, #c35f00, #a65200);
+}
+
+.btn-status-complete {
+    background: linear-gradient(135deg, #28a745, #218838);
+}
+
+.btn-status-complete:hover {
+    background: linear-gradient(135deg, #218838, #1c7430);
+}
+
+.btn-status-complete.active {
+    background: linear-gradient(135deg, #1c7430, #175a25);
+}

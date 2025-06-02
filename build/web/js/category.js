@@ -36,7 +36,10 @@ function loadCategories() {
                 <span class="category-color me-2" style="background-color: #000; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
                 <span>Tất cả danh mục</span>
             `;
-            allCategoriesItem.addEventListener('click', () => loadTasks());
+            allCategoriesItem.addEventListener('click', () => {
+    currentFilter.madanhmuc = null;
+    loadTasks();
+});
             categoryList.appendChild(allCategoriesItem);
 
             if (data.length === 0) {
@@ -66,7 +69,9 @@ function loadCategories() {
 
                 categoryInfo.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    loadTasks(category.madanhmuc);
+                    currentFilter.madanhmuc = category.madanhmuc;
+                    loadTasks();
+
                 });
 
                 categoryInfo.appendChild(colorDot);

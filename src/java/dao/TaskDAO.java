@@ -8,7 +8,9 @@ import util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class TaskDAO {
@@ -42,19 +44,18 @@ public class TaskDAO {
     }
 
  // Lấy danh sách công việc
-public List<Task> getTasks(int manguoidung, Integer madanhmuc) throws SQLException {
+public List<Task> getTasks(int manguoidung, Integer madanhmuc, String mucdouutien, String trangthai, String thoigian) throws SQLException {
     List<Task> tasks = new ArrayList<>();
-    String call = "{CALL GetTasks(?, ?)}";
+    String sql = "{CALL GetTasks(?, ?, ?, ?, ?)}";
 
     try (Connection conn = DBConnection.getConnection();
-         CallableStatement stmt = conn.prepareCall(call)) {
-        
+         CallableStatement stmt = conn.prepareCall(sql)) {
+
         stmt.setInt(1, manguoidung);
-        if (madanhmuc != null) {
-            stmt.setInt(2, madanhmuc);
-        } else {
-            stmt.setNull(2, java.sql.Types.INTEGER);
-        }
+        stmt.setObject(2, madanhmuc, java.sql.Types.INTEGER);
+        stmt.setString(3, mucdouutien);
+        stmt.setString(4, trangthai);
+        stmt.setString(5, thoigian);
 
         ResultSet rs = stmt.executeQuery();
 
@@ -63,14 +64,13 @@ public List<Task> getTasks(int manguoidung, Integer madanhmuc) throws SQLExcepti
             task.setMacongviec(rs.getInt("MACONGVIEC"));
             task.setTieude(rs.getString("TIEUDE"));
             task.setMucdouutien(rs.getString("MUCDOUUTIEN"));
-            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN")); // KHÔNG dùng Calendar ở đây
+            task.setNgayhethan(rs.getTimestamp("NGAYHETHAN"));
             task.setDahoanthanh(rs.getBoolean("DAHOANTHANH"));
             tasks.add(task);
         }
     }
     return tasks;
 }
-
 
 public Task getTaskDetails(int macongviec) throws SQLException {
     Task task = null;
@@ -230,4 +230,46 @@ public Task getTaskDetails(int macongviec) throws SQLException {
             throw new SQLException("Lỗi khi đánh dấu công việc là đã hoàn thành: " + e.getMessage(), e);
         }
     }
+    
+public Map<String, Integer> getMonthlyTaskStats(int manguoidung) throws SQLException {
+    Map<String, Integer> stats = new HashMap<>();
+    String sql = "{CALL GetMonthlyTaskStats(?)}";
+
+    try (Connection conn = DBConnection.getConnection();
+         CallableStatement stmt = conn.prepareCall(sql)) {
+
+        stmt.setInt(1, manguoidung);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                stats.put("total", rs.getInt("total"));
+                stats.put("completed", rs.getInt("completed"));
+                stats.put("incomplete", rs.getInt("incomplete"));
+            }
+        }
+    }
+
+    return stats;
+}
+
+public List<Map<String, Object>> getTaskStatsByPriority(int manguoidung) throws SQLException {
+    List<Map<String, Object>> stats = new ArrayList<>();
+    String sql = "{CALL GetTaskStatsByPriority(?)}";
+
+    try (Connection conn = DBConnection.getConnection();
+         CallableStatement stmt = conn.prepareCall(sql)) {
+        stmt.setInt(1, manguoidung);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+                row.put("priority", rs.getString("priority"));
+                row.put("completed", rs.getInt("completed"));
+                row.put("incomplete", rs.getInt("incomplete"));
+                stats.add(row);
+            }
+        }
+    }
+
+    return stats;
+}
+
 }
