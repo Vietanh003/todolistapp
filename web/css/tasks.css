@@ -4,12 +4,14 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     padding: 20px;
-    transition: margin-left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng để căn giữa */
+    margin: 0 auto; /* Căn giữa lưới */
 }
 
-/* Adjust task grid margin based on sidebar state */
+/* Remove margin-left from task-grid since it's already handled by main-content */
 .main-content .task-grid {
-    margin-left: 260px; /* Matches sidebar width */
+    margin-left: 0; /* Không cần margin-left vì main-content đã xử lý */
 }
 
 .main-content.expanded .task-grid {
@@ -258,11 +260,15 @@
     background: linear-gradient(145deg, #f8f9fa, #e9ecef);
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    transition: margin-left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng để căn giữa */
+    margin-left: auto;
+    margin-right: auto;
 }
 
+/* Remove margin-left from filter-section since it's already handled by main-content */
 .main-content .filter-section {
-    margin-left: 260px; /* Matches sidebar width */
+    margin-left: 0; /* Không cần margin-left vì main-content đã xử lý */
 }
 
 .main-content.expanded .filter-section {

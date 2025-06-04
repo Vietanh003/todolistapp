@@ -1,12 +1,3 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : 02 Jun,2025, 13:26:08
-    Author     : vanhdz
-*/
-
 /* Profile Page Styling */
 body {
     background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -93,6 +84,24 @@ body {
 }
 
 .profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.modal .profile-avatar {
+    width: 100px; /* Giới hạn kích thước cố định */
+    height: 100px; /* Giới hạn kích thước cố định */
+    max-width: 100px; /* Đảm bảo không vượt quá */
+    max-height: 100px; /* Đảm bảo không vượt quá */
+    border: 3px solid white; /* Giảm viền để phù hợp với kích thước nhỏ hơn */
+    border-radius: 50%;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Giảm bóng để nhẹ nhàng hơn */
+    display: block;
+    margin: 0 auto 1rem;
+    transition: transform 0.3s ease;
+}
+
+.modal .profile-avatar:hover {
     transform: scale(1.05);
 }
 

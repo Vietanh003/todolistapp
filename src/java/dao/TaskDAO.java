@@ -102,56 +102,69 @@ public Task getTaskDetails(int macongviec) throws SQLException {
             task.setAttachments(new ArrayList<>());
             task.setActivityLogs(new ArrayList<>());
 
-            if (rs.getTimestamp("THOIGIANNHACNHO", calendar) != null) {
-                task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO", calendar));
+            Timestamp nhacNhoTime = rs.getTimestamp("THOIGIANNHACNHO", calendar);
+            if (nhacNhoTime != null) {
+                task.addNhacNho(nhacNhoTime);
             }
 
-            if (rs.getString("TENTEP") != null) {
+            String tenTep = rs.getString("TENTEP");
+            if (tenTep != null) {
                 Attachment attachment = new Attachment();
-                attachment.setTentep(rs.getString("TENTEP"));
+                attachment.setTentep(tenTep);
                 attachment.setDuongdantep(rs.getString("DUONGDANTEP"));
                 attachment.setLoaitep(rs.getString("LOAITEP"));
                 task.addAttachment(attachment);
             }
 
             String lichSuHoatDong = rs.getString("LICH_SU_HOAT_DONG");
-            if (lichSuHoatDong != null && !lichSuHoatDong.isEmpty()) {
+            if (lichSuHoatDong != null && !lichSuHoatDong.trim().isEmpty()) {
                 String[] actions = lichSuHoatDong.split(",");
                 for (String action : actions) {
-                    String[] parts = action.split("\\|");
-                    if (parts.length == 2) {
-                        String hanhDong = parts[0];
-                        String thoiGianStr = parts[1];
-                        try {
-                            Timestamp thoiGian = Timestamp.valueOf(thoiGianStr);
-                            ActivityLog log = new ActivityLog();
-                            log.setHanhdong(hanhDong);
-                            log.setThoigian(thoiGian);
-                            task.getActivityLogs().add(log);
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Lỗi định dạng thời gian: " + thoiGianStr);
+                    if (action.contains("|")) {
+                        String[] parts = action.split("\\|");
+                        if (parts.length == 2) {
+                            String hanhDong = parts[0].trim();
+                            String thoiGianStr = parts[1].trim();
+                            try {
+                                Timestamp thoiGian = Timestamp.valueOf(thoiGianStr);
+                                ActivityLog log = new ActivityLog();
+                                log.setHanhdong(hanhDong);
+                                log.setThoigian(thoiGian);
+                                task.getActivityLogs().add(log);
+                            } catch (IllegalArgumentException e) {
+                                System.err.println("Lỗi định dạng thời gian: " + thoiGianStr + " - " + e.getMessage());
+                            }
                         }
                     }
                 }
             }
 
             while (rs.next()) {
-                if (rs.getTimestamp("THOIGIANNHACNHO", calendar) != null) {
-                    task.addNhacNho(rs.getTimestamp("THOIGIANNHACNHO", calendar));
+                nhacNhoTime = rs.getTimestamp("THOIGIANNHACNHO", calendar);
+                if (nhacNhoTime != null) {
+                    task.addNhacNho(nhacNhoTime);
                 }
 
-                if (rs.getString("TENTEP") != null) {
+                tenTep = rs.getString("TENTEP");
+                if (tenTep != null) {
                     Attachment attachment = new Attachment();
-                    attachment.setTentep(rs.getString("TENTEP"));
+                    attachment.setTentep(tenTep);
                     attachment.setDuongdantep(rs.getString("DUONGDANTEP"));
                     attachment.setLoaitep(rs.getString("LOAITEP"));
                     task.addAttachment(attachment);
                 }
             }
+        } else {
+            // Không tìm thấy công việc
+            return null;
         }
+    } catch (SQLException e) {
+        System.err.println("Lỗi SQL khi lấy chi tiết công việc: " + e.getMessage());
+        throw e;
     }
     return task;
 }
+
     // Ghi nhật ký hoạt động
     public void logActivity(int macongviec, int manguoidung, String hanhdong) throws SQLException {
         String call = "{CALL LogActivity(?, ?, ?)}";

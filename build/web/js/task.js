@@ -117,7 +117,8 @@ function loadTaskDetails(macongviec) {
         return;
     }
 
-    if (!macongviec) {
+    // Kiểm tra macongviec hợp lệ
+    if (!macongviec || isNaN(macongviec)) {
         taskInfo.innerHTML = '<p class="text-danger">Mã công việc không hợp lệ.</p>';
         showWarningAlert("Mã công việc không hợp lệ!");
         return;
@@ -125,21 +126,30 @@ function loadTaskDetails(macongviec) {
 
     const taskDetailsModal = document.getElementById('taskDetailsModal');
     const markCompleteBtn = document.getElementById('markCompleteBtn');
-    const editBtn = taskDetailsModal.querySelector('.btn-edit'); // Lấy nút "Sửa"
+    const editBtn = taskDetailsModal.querySelector('.btn-edit');
 
     taskDetailsModal.dataset.macongviec = macongviec;
 
-    fetch(`tasks?action=getTaskDetails&macongviec=${macongviec}`)
+    // Hiển thị loading
+    taskInfo.innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    `;
+
+    fetch(`${window.contextPath}/tasks?action=getTaskDetails&macongviec=${encodeURIComponent(macongviec)}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Lỗi khi lấy chi tiết công việc');
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Lỗi không xác định khi lấy chi tiết công việc');
+                });
             }
             return response.json();
         })
         .then(task => {
-            taskInfo.innerHTML = '';
-
-            if (!task) {
+            if (!task || Object.keys(task).length === 0) {
                 taskInfo.innerHTML = '<p class="text-danger">Không tìm thấy công việc.</p>';
                 showErrorAlert("Không tìm thấy công việc!");
                 return;
@@ -147,10 +157,10 @@ function loadTaskDetails(macongviec) {
 
             if (task.dahoanthanh) {
                 markCompleteBtn.style.display = 'none';
-                editBtn.style.display = 'none'; // Ẩn nút "Sửa" khi công việc đã hoàn thành
+                editBtn.style.display = 'none';
             } else {
                 markCompleteBtn.style.display = 'inline-block';
-                editBtn.style.display = 'inline-block'; // Hiển thị nút "Sửa" khi công việc chưa hoàn thành
+                editBtn.style.display = 'inline-block';
             }
 
             taskInfo.innerHTML = `
@@ -184,7 +194,7 @@ function loadTaskDetails(macongviec) {
                             <h6 class="text-muted">
                                 <i class="fas fa-calendar-alt me-2"></i>Ngày hết hạn
                             </h6>
-                            <p class="card-text">${task.ngayhethan ? new Date(task.ngayhethan).toLocaleString() : 'Không có ngày hết hạn'}</p>
+                            <p class="card-text">${task.ngayhethan ? new Date(task.ngayhethan).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'Không có ngày hết hạn'}</p>
                         </div>
                         <div class="mb-3">
                             <h6 class="text-muted">
@@ -198,7 +208,7 @@ function loadTaskDetails(macongviec) {
                                 <h6 class="text-muted">
                                     <i class="fas fa-calendar-check me-2"></i>Ngày hoàn thành
                                 </h6>
-                                <p class="card-text">${new Date(task.ngayhoanthanh).toLocaleString()}</p>
+                                <p class="card-text">${new Date(task.ngayhoanthanh).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</p>
                             </div>` : ''
                         }
                         <div class="mb-3">
@@ -211,7 +221,7 @@ function loadTaskDetails(macongviec) {
                                         ? task.nhacNho.map(time => `
                                             <li class="list-group-item d-flex align-items-center">
                                                 <i class="fas fa-clock me-2 text-primary"></i>
-                                                ${new Date(time).toLocaleString()}
+                                                ${new Date(time).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
                                             </li>`).join('')
                                         : '<li class="list-group-item text-muted">Không có nhắc nhở</li>'
                                 }
@@ -244,7 +254,7 @@ function loadTaskDetails(macongviec) {
                                         ? task.activityLogs.map(log => `
                                             <li class="list-group-item d-flex align-items-center">
                                                 <i class="fas fa-check-circle me-2 text-info"></i>
-                                                ${log.hanhdong} - <span class="text-muted">${new Date(log.thoigian).toLocaleString()}</span>
+                                                ${log.hanhdong} - <span class="text-muted">${new Date(log.thoigian).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}</span>
                                             </li>`).join('')
                                         : '<li class="list-group-item text-muted">Không có nhật ký hoạt động</li>'
                                 }
@@ -256,10 +266,11 @@ function loadTaskDetails(macongviec) {
         })
         .catch(error => {
             console.error('Lỗi:', error);
-            taskInfo.innerHTML = '<p class="text-danger">Lỗi khi tải chi tiết công việc.</p>';
-            showErrorAlert("Lỗi khi tải chi tiết công việc: " + error.message);
+            taskInfo.innerHTML = `<p class="text-danger">Lỗi khi tải chi tiết công việc: ${error.message}</p>`;
+            showErrorAlert(`Lỗi khi tải chi tiết công việc: ${error.message}`);
         });
 }
+
 function setupTaskForm() {
     const taskReminder = document.getElementById("taskReminder");
     const reminderDateDiv = document.getElementById("reminderDateDiv");

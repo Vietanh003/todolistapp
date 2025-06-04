@@ -35,7 +35,7 @@ public class TaskServlet extends HttpServlet {
         categoryDAO = new CategoryDAO();
     }
 
-  @Override
+ @Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
         HttpSession session = request.getSession(false);
@@ -55,43 +55,70 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         response.setCharacterEncoding("UTF-8");
 
         if ("getTasks".equals(action)) {
-    try {
-        String madanhmucStr = request.getParameter("madanhmuc");
-        String mucdouutien = request.getParameter("mucdouutien");
-        String trangthai = request.getParameter("trangthai");
-        String thoigian = request.getParameter("thoigian");
+            try {
+                String madanhmucStr = request.getParameter("madanhmuc");
+                String mucdouutien = request.getParameter("mucdouutien");
+                String trangthai = request.getParameter("trangthai");
+                String thoigian = request.getParameter("thoigian");
 
-        Integer madanhmuc = (madanhmucStr != null && !madanhmucStr.isEmpty()) ? Integer.parseInt(madanhmucStr) : null;
+                Integer madanhmuc = (madanhmucStr != null && !madanhmucStr.isEmpty()) ? Integer.parseInt(madanhmucStr) : null;
 
-        List<Task> tasks = taskDAO.getTasks(user.getMaNguoiDung(), madanhmuc, mucdouutien, trangthai, thoigian);
-        response.getWriter().write(gson.toJson(tasks));
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write("{\"error\": \"Lỗi khi lấy danh sách công việc: " + e.getMessage() + "\"}");
-    }
- } else if ("getMonthlyStats".equals(action)) {
-    try {
-        Map<String, Integer> stats = taskDAO.getMonthlyTaskStats(user.getMaNguoiDung());
-        response.getWriter().write(gson.toJson(stats));
-    } catch (SQLException e) {
-        e.printStackTrace();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write("{\"error\": \"Lỗi khi lấy thống kê: " + e.getMessage() + "\"}");
-    }
-} else if ("getStatsByPriority".equals(action)) {
-    try {
-        List<Map<String, Object>> stats = taskDAO.getTaskStatsByPriority(user.getMaNguoiDung());
-        response.setContentType("application/json");
-        response.getWriter().write(gson.toJson(stats));
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.setStatus(500);
-        response.getWriter().write("{\"error\":\"Lỗi khi lấy thống kê theo mức độ.\"}");
-    }
-}
+                List<Task> tasks = taskDAO.getTasks(user.getMaNguoiDung(), madanhmuc, mucdouutien, trangthai, thoigian);
+                response.getWriter().write(gson.toJson(tasks));
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Lỗi khi lấy danh sách công việc: " + e.getMessage() + "\"}");
+            }
+        } else if ("getMonthlyStats".equals(action)) {
+            try {
+                Map<String, Integer> stats = taskDAO.getMonthlyTaskStats(user.getMaNguoiDung());
+                response.getWriter().write(gson.toJson(stats));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Lỗi khi lấy thống kê: " + e.getMessage() + "\"}");
+            }
+        } else if ("getStatsByPriority".equals(action)) {
+            try {
+                List<Map<String, Object>> stats = taskDAO.getTaskStatsByPriority(user.getMaNguoiDung());
+                response.getWriter().write(gson.toJson(stats));
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Lỗi khi lấy thống kê theo mức độ: " + e.getMessage() + "\"}");
+            }
+        } else if ("getTaskDetails".equals(action)) {
+            try {
+                String macongviecStr = request.getParameter("macongviec");
+                if (macongviecStr == null || macongviecStr.isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ\"}");
+                    return;
+                }
 
+                int macongviec = Integer.parseInt(macongviecStr);
+                Task task = taskDAO.getTaskDetails(macongviec);
 
+                if (task == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().write("{\"error\": \"Không tìm thấy công việc\"}");
+                    return;
+                }
+
+                response.getWriter().write(gson.toJson(task));
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"Mã công việc không hợp lệ: " + e.getMessage() + "\"}");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Lỗi khi lấy chi tiết công việc: " + e.getMessage() + "\"}");
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"Hành động không hợp lệ\"}");
+        }
     } catch (Exception e) {
         e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -100,6 +127,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         response.getWriter().write("{\"error\": \"Lỗi không xác định: " + e.getMessage() + "\"}");
     }
 }
+
  @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     request.setCharacterEncoding("UTF-8");
