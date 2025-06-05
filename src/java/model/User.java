@@ -10,11 +10,9 @@ public class User {
     private Timestamp ngayTao;
     private String duongDanAnhDaiDien;
 
-    // Constructor không tham số (thêm vào để sửa lỗi)
     public User() {
     }
 
-    // Constructor với 6 tham số (đã có)
     public User(int maNguoiDung, String email, String matKhau, String tenNguoiDung, Timestamp ngayTao, String duongDanAnhDaiDien) {
         this.maNguoiDung = maNguoiDung;
         this.email = email;
@@ -24,14 +22,12 @@ public class User {
         this.duongDanAnhDaiDien = duongDanAnhDaiDien;
     }
 
-    // Constructor với 3 tham số (đã có, có thể từ phương thức registerUser)
     public User(String email, String matKhau, String tenNguoiDung) {
         this.email = email;
         this.matKhau = matKhau;
         this.tenNguoiDung = tenNguoiDung;
     }
 
-    // Getter và Setter
     public int getMaNguoiDung() {
         return maNguoiDung;
     }

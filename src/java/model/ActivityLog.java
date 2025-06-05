@@ -3,13 +3,12 @@ package model;
 import java.sql.Timestamp;
 
 public class ActivityLog {
-    private int manhatky;       // Mã nhật ký (MANHATKY)
-    private int macongviec;     // Mã công việc (MACONGVIEC)
-    private int manguoidung;    // Mã người dùng (MANGUOIDUNG)
-    private String hanhdong;    // Hành động (HANHDONG)
-    private Timestamp thoigian; // Thời gian (THOIGIAN)
+    private int manhatky;       
+    private int macongviec;     
+    private int manguoidung;    
+    private String hanhdong;    
+    private Timestamp thoigian; 
 
-    // Getters and Setters
     public int getManhatky() { return manhatky; }
     public void setManhatky(int manhatky) { this.manhatky = manhatky; }
     public int getMacongviec() { return macongviec; }

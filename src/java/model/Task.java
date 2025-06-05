@@ -27,7 +27,6 @@ public class Task {
         this.activityLogs = new ArrayList<>();
     }
 
-    // Getters and Setters
     public int getMacongviec() { return macongviec; }
     public void setMacongviec(int macongviec) { this.macongviec = macongviec; }
 

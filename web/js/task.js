@@ -288,27 +288,72 @@ function addTask() {
     const form = document.getElementById("addTaskForm");
     const formData = new FormData(form);
 
+    // Lấy giá trị từ form
+    const ngayhethanStr = formData.get("ngayhethan");
+    const hasReminder = formData.get("hasReminder") === "on";
+    const thoigiannhacnhoStr = formData.get("thoigiannhacnho");
+
+    // Ngày giờ hiện tại
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 7 * 60);
+
+    // Kiểm tra ngày hết hạn
+    if (ngayhethanStr) {
+        const ngayhethan = new Date(ngayhethanStr);
+        if (ngayhethan <= now) {
+            showErrorAlert("Ngày hết hạn phải sau ngày giờ hiện tại!");
+            return;
+        }
+
+        // Kiểm tra thời gian nhắc nhở
+        if (hasReminder && thoigiannhacnhoStr) {
+            const thoigiannhacnho = new Date(thoigiannhacnhoStr);
+            if (thoigiannhacnho <= now) {
+                showErrorAlert("Thời gian nhắc nhở phải lớn hơn ngày giờ hiện tại!");
+                return;
+            }
+            if (thoigiannhacnho >= ngayhethan) {
+                showErrorAlert("Thời gian nhắc nhở phải trước ngày hết hạn!");
+                return;
+            }
+        } else if (hasReminder && !thoigiannhacnhoStr) {
+            showErrorAlert("Vui lòng chọn thời gian nhắc nhở!");
+            return;
+        }
+    }
+
     fetch("tasks", {
         method: "POST",
         body: formData
     })
-    .then(response => response.json()) // Server giờ đây luôn trả về JSON
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.error || "Lỗi không xác định");
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        showSuccessAlert("Thêm công việc thành công!");
-        bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
-        // Trì hoãn tải lại trang để người dùng thấy thông báo
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500); // Chờ 1.5 giây trước khi tải lại trang
+        if (data.success) {
+            showSuccessAlert("Thêm công việc thành công!");
+            bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            throw new Error(data.error || "Lỗi không xác định");
+        }
     })
     .catch(error => {
         console.error("Lỗi:", error);
         showErrorAlert("Lỗi khi thêm công việc: " + error.message);
     });
 }
+
 function editTask(macongviec) {
     if (!macongviec || macongviec === "undefined") {
-         showWarningAlert("Mã công việc không hợp lệ!");
+        showWarningAlert("Mã công việc không hợp lệ!");
         return;
     }
 
@@ -330,12 +375,78 @@ function editTask(macongviec) {
             document.getElementById('editHasReminder').checked = task.nhacNho && task.nhacNho.length > 0;
             document.getElementById('editThoigiannhacnho').value = task.nhacNho && task.nhacNho.length > 0 ? new Date(task.nhacNho[0]).toISOString().slice(0, 16) : "";
             editModal.show();
+
+            // Thêm sự kiện submit cho form editTaskForm
+            const editForm = document.getElementById('editTaskForm');
+            editForm.onsubmit = function(e) {
+                e.preventDefault();
+                const formData = new FormData(editForm);
+
+                const ngayhethanStr = formData.get("ngayhethan");
+                const hasReminder = formData.get("hasReminder") === "on";
+                const thoigiannhacnhoStr = formData.get("thoigiannhacnho");
+
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 7 * 60); // Chuyển về múi giờ +07:00
+
+                if (ngayhethanStr) {
+                    const ngayhethan = new Date(ngayhethanStr);
+                    if (ngayhethan <= now) {
+                        showErrorAlert("Ngày hết hạn phải sau ngày giờ hiện tại!");
+                        return false;
+                    }
+
+                    if (hasReminder && thoigiannhacnhoStr) {
+                        const thoigiannhacnho = new Date(thoigiannhacnhoStr);
+                        if (thoigiannhacnho <= now) {
+                            showErrorAlert("Thời gian nhắc nhở phải lớn hơn ngày giờ hiện tại!");
+                            return false;
+                        }
+                        if (thoigiannhacnho >= ngayhethan) {
+                            showErrorAlert("Thời gian nhắc nhở phải trước ngày hết hạn!");
+                            return false;
+                        }
+                    } else if (hasReminder && !thoigiannhacnhoStr) {
+                        showErrorAlert("Vui lòng chọn thời gian nhắc nhở!");
+                        return false;
+                    }
+                }
+
+                fetch("tasks?action=updateTask", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.error || "Lỗi không xác định");
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showSuccessAlert("Cập nhật công việc thành công!");
+                        editModal.hide();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        throw new Error(data.error || "Lỗi không xác định");
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi:", error);
+                    showErrorAlert("Lỗi khi cập nhật công việc: " + error.message);
+                });
+            };
         })
         .catch(error => {
             console.error("Lỗi:", error);
-           showErrorAlert("Lỗi khi lấy chi tiết công việc: " + error.message);
+            showErrorAlert("Lỗi khi lấy chi tiết công việc: " + error.message);
         });
 }
+
 function deleteTask(macongviec) {
     showConfirmAlert('Bạn có chắc chắn muốn xóa công việc này?', () => {
         const formData = new FormData();

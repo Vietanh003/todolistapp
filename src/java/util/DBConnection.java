@@ -10,7 +10,6 @@ public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "1234";
 
-    // Static block để load Driver một lần khi class được load
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

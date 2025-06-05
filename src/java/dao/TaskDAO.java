@@ -15,33 +15,51 @@ import java.util.TimeZone;
 
 public class TaskDAO {
 
-    // Thêm công việc
-    public int addTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
-        String call = "{CALL AddTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        try (Connection conn = DBConnection.getConnection();
-             CallableStatement stmt = conn.prepareCall(call)) {
-            stmt.setInt(1, task.getManguoidung());
-            stmt.setInt(2, task.getMadanhmuc() != null ? task.getMadanhmuc() : 0);
-            stmt.setString(3, task.getTieude());
-            stmt.setString(4, task.getMota());
-            stmt.setString(5, task.getMucdouutien());
-            stmt.setTimestamp(6, task.getNgayhethan());
-            stmt.setBoolean(7, hasReminder);
-            stmt.setTimestamp(8, reminderTime);
-            if (attachment != null) {
-                stmt.setString(9, attachment.getTentep());
-                stmt.setString(10, attachment.getDuongdantep());
-                stmt.setString(11, attachment.getLoaitep());
-            } else {
-                stmt.setNull(9, Types.VARCHAR);
-                stmt.setNull(10, Types.VARCHAR);
-                stmt.setNull(11, Types.VARCHAR);
+public int addTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
+    // Kiểm tra thời gian
+    Timestamp now = new Timestamp(System.currentTimeMillis());
+    if (task.getNgayhethan() != null) {
+        if (task.getNgayhethan().before(now)) {
+            throw new SQLException("Ngày hết hạn phải sau ngày giờ hiện tại");
+        }
+
+        if (hasReminder && reminderTime != null) {
+            if (reminderTime.before(now)) {
+                throw new SQLException("Thời gian nhắc nhở phải lớn hơn ngày giờ hiện tại");
             }
-            stmt.registerOutParameter(12, Types.INTEGER);
-            stmt.execute();
-            return stmt.getInt(12);
+            if (reminderTime.after(task.getNgayhethan()) || reminderTime.equals(task.getNgayhethan())) {
+                throw new SQLException("Thời gian nhắc nhở phải trước ngày hết hạn");
+            }
+        } else if (hasReminder && reminderTime == null) {
+            throw new SQLException("Thời gian nhắc nhở không được để trống khi có nhắc nhở");
         }
     }
+
+    String call = "{CALL AddTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    try (Connection conn = DBConnection.getConnection();
+         CallableStatement stmt = conn.prepareCall(call)) {
+        stmt.setInt(1, task.getManguoidung());
+        stmt.setInt(2, task.getMadanhmuc() != null ? task.getMadanhmuc() : 0);
+        stmt.setString(3, task.getTieude());
+        stmt.setString(4, task.getMota());
+        stmt.setString(5, task.getMucdouutien());
+        stmt.setTimestamp(6, task.getNgayhethan());
+        stmt.setBoolean(7, hasReminder);
+        stmt.setTimestamp(8, reminderTime);
+        if (attachment != null) {
+            stmt.setString(9, attachment.getTentep());
+            stmt.setString(10, attachment.getDuongdantep());
+            stmt.setString(11, attachment.getLoaitep());
+        } else {
+            stmt.setNull(9, Types.VARCHAR);
+            stmt.setNull(10, Types.VARCHAR);
+            stmt.setNull(11, Types.VARCHAR);
+        }
+        stmt.registerOutParameter(12, Types.INTEGER);
+        stmt.execute();
+        return stmt.getInt(12);
+    }
+}
 
  // Lấy danh sách công việc
 public List<Task> getTasks(int manguoidung, Integer madanhmuc, String mucdouutien, String trangthai, String thoigian) throws SQLException {
@@ -178,33 +196,52 @@ public Task getTaskDetails(int macongviec) throws SQLException {
     }
 
     // Cập nhật công việc
-    public String updateTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
-        String call = "{CALL UpdateTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
-        try (Connection conn = DBConnection.getConnection();
-             CallableStatement stmt = conn.prepareCall(call)) {
-            stmt.setInt(1, task.getMacongviec());
-            stmt.setInt(2, task.getManguoidung());
-            stmt.setInt(3, task.getMadanhmuc() != null ? task.getMadanhmuc() : 0);
-            stmt.setString(4, task.getTieude());
-            stmt.setString(5, task.getMota());
-            stmt.setString(6, task.getMucdouutien());
-            stmt.setTimestamp(7, task.getNgayhethan());
-            stmt.setBoolean(8, hasReminder);
-            stmt.setTimestamp(9, reminderTime);
-            if (attachment != null) {
-                stmt.setString(10, attachment.getTentep());
-                stmt.setString(11, attachment.getDuongdantep());
-                stmt.setString(12, attachment.getLoaitep());
-            } else {
-                stmt.setNull(10, Types.VARCHAR);
-                stmt.setNull(11, Types.VARCHAR);
-                stmt.setNull(12, Types.VARCHAR);
+public String updateTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
+    // Kiểm tra thời gian
+    Timestamp now = new Timestamp(System.currentTimeMillis());
+    if (task.getNgayhethan() != null) {
+        if (task.getNgayhethan().before(now)) {
+            return "Ngày hết hạn phải sau ngày giờ hiện tại";
+        }
+
+        if (hasReminder && reminderTime != null) {
+            if (reminderTime.before(now)) {
+                return "Thời gian nhắc nhở phải lớn hơn ngày giờ hiện tại";
             }
-            stmt.registerOutParameter(13, Types.VARCHAR);
-            stmt.execute();
-            return stmt.getString(13); // Trả về thông báo lỗi (nếu có)
+            if (reminderTime.after(task.getNgayhethan()) || reminderTime.equals(task.getNgayhethan())) {
+                return "Thời gian nhắc nhở phải trước ngày hết hạn";
+            }
+        } else if (hasReminder && reminderTime == null) {
+            return "Thời gian nhắc nhở không được để trống khi có nhắc nhở";
         }
     }
+
+    String call = "{CALL UpdateTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    try (Connection conn = DBConnection.getConnection();
+         CallableStatement stmt = conn.prepareCall(call)) {
+        stmt.setInt(1, task.getMacongviec());
+        stmt.setInt(2, task.getManguoidung());
+        stmt.setInt(3, task.getMadanhmuc() != null ? task.getMadanhmuc() : 0);
+        stmt.setString(4, task.getTieude());
+        stmt.setString(5, task.getMota());
+        stmt.setString(6, task.getMucdouutien());
+        stmt.setTimestamp(7, task.getNgayhethan());
+        stmt.setBoolean(8, hasReminder);
+        stmt.setTimestamp(9, reminderTime);
+        if (attachment != null) {
+            stmt.setString(10, attachment.getTentep());
+            stmt.setString(11, attachment.getDuongdantep());
+            stmt.setString(12, attachment.getLoaitep());
+        } else {
+            stmt.setNull(10, Types.VARCHAR);
+            stmt.setNull(11, Types.VARCHAR);
+            stmt.setNull(12, Types.VARCHAR);
+        }
+        stmt.registerOutParameter(13, Types.VARCHAR);
+        stmt.execute();
+        return stmt.getString(13); // Trả về thông báo lỗi (nếu có)
+    }
+}
 
     // Xóa công việc
     public String deleteTask(int macongviec, int manguoidung) throws SQLException {

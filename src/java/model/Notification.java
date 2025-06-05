@@ -20,7 +20,6 @@ public class Notification {
         this.moTa = moTa;
     }
 
-    // Getters and Setters
     public int getMaThongBao() {
         return maThongBao;
     }
