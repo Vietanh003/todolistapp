@@ -7,16 +7,29 @@
             <file>file:/E:/Java/DoAn/todolistapp/web/tasks.jsp</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/UserInfoServlet.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/util/DBConnection.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/LoginServlet.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/css/tasks.css</file>
+            <file>file:/E:/Java/DoAn/todolistapp/web/js/quotes.js</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/model/Attachment.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/web/META-INF/context.xml</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/profile.jsp</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/css/register.css</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/css/home.css</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/home.jsp</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/model/ActivityLog.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/model/User.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/login.jsp</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/dao/NotificationDAO.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/WEB-INF/web.xml</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/CategoryServlet.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/util/OperationResult.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/model/Task.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/dao/TaskDAO.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/dao/CategoryDAO.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/LogoutServlet.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/RegisterServlet.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/model/Category.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/conf/MANIFEST.MF</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/js/task.js</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/js/utils.js</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/js/notification.js</file>
@@ -31,6 +44,8 @@
             <file>file:/E:/Java/DoAn/todolistapp/web/WEB-INF/views/segments/footer.jspf</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/model/Notification.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/web/css/login.css</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/NotificationServlet.java</file>
+            <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/HomeServlet.java</file>
             <file>file:/E:/Java/DoAn/todolistapp/src/java/controller/TaskServlet.java</file>
         </group>
     </open-files>

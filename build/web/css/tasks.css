@@ -5,13 +5,12 @@
     gap: 20px;
     padding: 20px;
     width: 100%;
-    max-width: 1200px; /* Giới hạn chiều rộng để căn giữa */
-    margin: 0 auto; /* Căn giữa lưới */
+    max-width: 1200px; 
+    margin: 0 auto;
 }
 
-/* Remove margin-left from task-grid since it's already handled by main-content */
 .main-content .task-grid {
-    margin-left: 0; /* Không cần margin-left vì main-content đã xử lý */
+    margin-left: 0; 
 }
 
 .main-content.expanded .task-grid {
@@ -261,14 +260,13 @@
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     width: 100%;
-    max-width: 1200px; /* Giới hạn chiều rộng để căn giữa */
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Remove margin-left from filter-section since it's already handled by main-content */
 .main-content .filter-section {
-    margin-left: 0; /* Không cần margin-left vì main-content đã xử lý */
+    margin-left: 0;
 }
 
 .main-content.expanded .filter-section {

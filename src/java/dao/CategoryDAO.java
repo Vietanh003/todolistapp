@@ -37,7 +37,6 @@ public class CategoryDAO {
         }
     }
 
-    // Lấy danh sách danh mục của người dùng
     public List<Category> getCategories(int userId) {
         List<Category> categories = new ArrayList<>();
         String sql = "{CALL GetCategories(?)}";
@@ -62,7 +61,6 @@ public class CategoryDAO {
         return categories;
     }
 
-    // Lấy danh sách mã danh mục và tên danh mục của người dùng
     public List<CategoryIdAndName> getCategoryIdsAndNames(int userId) {
         List<CategoryIdAndName> categoryList = new ArrayList<>();
         String sql = "{CALL GetCategories(?)}";
@@ -85,7 +83,6 @@ public class CategoryDAO {
         return categoryList;
     }
 
-    // Thêm danh mục
     public boolean addCategory(int userId, String ten, String mausac) {
         String sql = "{CALL AddCategory(?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -103,7 +100,6 @@ public class CategoryDAO {
         }
     }
 
-    // Cập nhật danh mục
     public boolean updateCategory(int madanhmuc, int userId, String ten, String mausac) {
         String sql = "{CALL UpdateCategory(?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -122,7 +118,6 @@ public class CategoryDAO {
         }
     }
 
-    // Xóa danh mục
     public boolean deleteCategory(int madanhmuc, int userId) {
         String sql = "{CALL DeleteCategory(?, ?)}";
         try (Connection conn = DBConnection.getConnection();

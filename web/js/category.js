@@ -28,7 +28,7 @@ function loadCategories() {
             let categoryList = document.getElementById("category-list");
             categoryList.innerHTML = "";
 
-            // Thêm mục "Tất cả danh mục"
+            // Thêm mục Tất cả danh mục
             let allCategoriesItem = document.createElement("li");
             allCategoriesItem.className = "dropdown-item d-flex align-items-center";
             allCategoriesItem.style.cursor = "pointer";

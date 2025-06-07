@@ -17,7 +17,7 @@ public class CategoryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final CategoryDAO categoryDAO = new CategoryDAO();
 
-    // Lấy danh sách danh mục (GET)
+    //GET
 @Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     User user = (User) request.getSession().getAttribute("user");
@@ -34,9 +34,6 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
     response.getWriter().write(new Gson().toJson(categories));
 }
 
-
-
-    // Thêm danh mục (POST)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
@@ -69,7 +66,7 @@ protected void doPut(HttpServletRequest request, HttpServletResponse response) t
         return;
     }
 
-    // Đọc thủ công nội dung form từ request body (xử lý PUT)
+    // xử lý PUT
     String body = request.getReader().lines().collect(java.util.stream.Collectors.joining(System.lineSeparator()));
     java.util.Map<String, String> params = new java.util.HashMap<>();
     for (String param : body.split("&")) {
@@ -139,7 +136,7 @@ protected void doDelete(HttpServletRequest request, HttpServletResponse response
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.getWriter().write("{\"error\": \"madanhmuc không hợp lệ.\"}");
     } catch (Exception e) {
-        e.printStackTrace(); // Ghi log lỗi chi tiết trong console Tomcat
+        e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getWriter().write("{\"error\": \"Lỗi máy chủ.\"}");
     }

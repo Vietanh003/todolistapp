@@ -80,7 +80,7 @@
         setupViewHomeButton();
         fetchNotifications();
         loadMonthlyStats();
-        loadStatsByPriority(); // Gọi hàm để hiển thị bảng
+        loadStatsByPriority();
         showRandomQuote();
     });
 

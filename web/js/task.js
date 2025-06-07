@@ -292,14 +292,17 @@ function addTask() {
         method: "POST",
         body: formData
     })
-    .then(response => response.json()) // Server giờ đây luôn trả về JSON
+    .then(response => response.json())
     .then(data => {
-        showSuccessAlert("Thêm công việc thành công!");
-        bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
-        // Trì hoãn tải lại trang để người dùng thấy thông báo
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500); // Chờ 1.5 giây trước khi tải lại trang
+        if (data.success) {
+            showSuccessAlert("Thêm công việc thành công!");
+            bootstrap.Modal.getInstance(document.getElementById("addTaskModal")).hide();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500); // Chờ 1.5 giây trước khi tải lại trang
+        } else {
+            showErrorAlert("Lỗi khi thêm công việc: " + (data.error || "Không xác định"));
+        }
     })
     .catch(error => {
         console.error("Lỗi:", error);
@@ -308,7 +311,7 @@ function addTask() {
 }
 function editTask(macongviec) {
     if (!macongviec || macongviec === "undefined") {
-         showWarningAlert("Mã công việc không hợp lệ!");
+        showWarningAlert("Mã công việc không hợp lệ!");
         return;
     }
 
@@ -322,18 +325,19 @@ function editTask(macongviec) {
         .then(task => {
             const editModal = new bootstrap.Modal(document.getElementById('editTaskModal'));
             document.getElementById('editTaskId').value = macongviec;
-            document.getElementById('editTieude').value = task.tieude;
-            document.getElementById('editMota').value = task.mota;
+            document.getElementById('editTieude').value = task.tieude || "";
+            document.getElementById('editMota').value = task.mota || "";
             document.getElementById('editMadanhmuc').value = task.category ? task.category.madanhmuc : "";
-            document.getElementById('editMucdouutien').value = task.mucdouutien;
+            document.getElementById('editMucdouutien').value = task.mucdouutien || "";
             document.getElementById('editNgayhethan').value = task.ngayhethan ? new Date(task.ngayhethan).toISOString().slice(0, 16) : "";
             document.getElementById('editHasReminder').checked = task.nhacNho && task.nhacNho.length > 0;
             document.getElementById('editThoigiannhacnho').value = task.nhacNho && task.nhacNho.length > 0 ? new Date(task.nhacNho[0]).toISOString().slice(0, 16) : "";
+
             editModal.show();
         })
         .catch(error => {
             console.error("Lỗi:", error);
-           showErrorAlert("Lỗi khi lấy chi tiết công việc: " + error.message);
+            showErrorAlert("Lỗi khi lấy chi tiết công việc: " + error.message);
         });
 }
 function deleteTask(macongviec) {

@@ -15,7 +15,6 @@ import java.util.TimeZone;
 
 public class TaskDAO {
 
-    // Thêm công việc
     public int addTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
         String call = "{CALL AddTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -43,7 +42,6 @@ public class TaskDAO {
         }
     }
 
- // Lấy danh sách công việc
 public List<Task> getTasks(int manguoidung, Integer madanhmuc, String mucdouutien, String trangthai, String thoigian) throws SQLException {
     List<Task> tasks = new ArrayList<>();
     String sql = "{CALL GetTasks(?, ?, ?, ?, ?)}";
@@ -155,7 +153,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
                 }
             }
         } else {
-            // Không tìm thấy công việc
             return null;
         }
     } catch (SQLException e) {
@@ -165,7 +162,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
     return task;
 }
 
-    // Ghi nhật ký hoạt động
     public void logActivity(int macongviec, int manguoidung, String hanhdong) throws SQLException {
         String call = "{CALL LogActivity(?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -177,7 +173,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
         }
     }
 
-    // Cập nhật công việc
     public String updateTask(Task task, boolean hasReminder, Timestamp reminderTime, Attachment attachment) throws SQLException {
         String call = "{CALL UpdateTask(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -206,7 +201,6 @@ public Task getTaskDetails(int macongviec) throws SQLException {
         }
     }
 
-    // Xóa công việc
     public String deleteTask(int macongviec, int manguoidung) throws SQLException {
         String call = "{CALL DeleteTask(?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -215,7 +209,7 @@ public Task getTaskDetails(int macongviec) throws SQLException {
             stmt.setInt(2, manguoidung);
             stmt.registerOutParameter(3, Types.VARCHAR);
             stmt.execute();
-            return stmt.getString(3); // Trả về thông báo lỗi (nếu có)
+            return stmt.getString(3);
         }
     }
    

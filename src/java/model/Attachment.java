@@ -10,7 +10,7 @@ public class Attachment {
     private String loaitep;        
     private Timestamp ngaytaiLen; 
 
-    // Getters and Setters
+    // Getter and Setter
     public int getMatepdinhkem() { return matepdinhkem; }
     public void setMatepdinhkem(int matepdinhkem) { this.matepdinhkem = matepdinhkem; }
     public int getMacongviec() { return macongviec; }

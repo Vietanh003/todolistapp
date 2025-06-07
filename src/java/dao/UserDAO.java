@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 public class UserDAO {
-    // Phương thức đăng ký
+    
     public OperationResult registerUser(User user) {
         String sql = "{CALL CreateUser(?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -26,7 +26,6 @@ public class UserDAO {
         }
     }
 
-    // Phương thức đăng nhập
     public User loginUser(String email, String matKhau) {
         String sql = "{CALL LoginUser(?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -115,21 +114,16 @@ public class UserDAO {
         }
     }
 }
-    // Phương thức đổi mật khẩu
+
     public OperationResult changeUserPassword(int maNguoiDung, String currentPassword, String newPassword) {
         String sql = "{CALL ChangeUserPassword(?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
-            // Đặt tham số đầu vào
             stmt.setInt(1, maNguoiDung);
             stmt.setString(2, currentPassword);
             stmt.setString(3, newPassword);
-            // Đăng ký tham số đầu ra
             stmt.registerOutParameter(4, Types.VARCHAR); // p_message
-            // Thực thi
             stmt.execute();
-
-            // Lấy thông báo kết quả
             String message = stmt.getString(4);
             if (message.equals("Đổi mật khẩu thành công.")) {
                 return new OperationResult(true, message);

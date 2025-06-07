@@ -127,8 +127,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         response.getWriter().write("{\"error\": \"Lỗi không xác định: " + e.getMessage() + "\"}");
     }
 }
-
- @Override
+@Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     request.setCharacterEncoding("UTF-8");
 
@@ -150,6 +149,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 
     try {
         if ("updateTask".equals(action)) {
+            
             String macongviecStr = request.getParameter("macongviec");
             String tieude = request.getParameter("tieude");
             String mota = request.getParameter("mota");
@@ -184,6 +184,34 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 reminderTime = Timestamp.valueOf(thoigiannhacnhoStr.replace("T", " ") + ":00");
             }
 
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            if (task.getNgayhethan() != null && task.getNgayhethan().before(currentTime)) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\": false, \"error\": \"Thời gian hết hạn phải sau thời gian hiện tại!\"}");
+                return;
+            }
+            if (reminderTime != null) {
+                if (reminderTime.after(task.getNgayhethan())) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải trước thời gian hết hạn!\"}");
+                    return;
+                }
+                if (reminderTime.before(currentTime)) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải sau thời gian hiện tại!\"}");
+                    return;
+                }
+                // Nếu trùng ngày với hiện tại, so sánh giờ
+                if (reminderTime.toLocalDateTime().toLocalDate().equals(currentTime.toLocalDateTime().toLocalDate())) {
+                    if (reminderTime.toLocalDateTime().toLocalTime().isBefore(currentTime.toLocalDateTime().toLocalTime())) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải lớn hơn hoặc bằng thời gian hiện tại khi cùng ngày!\"}");
+                        return;
+                    }
+                }
+            }
+
+            // Xử lý tệp đính kèm
             Attachment attachment = null;
             Part filePart = request.getPart("attachment");
             if (filePart != null && filePart.getSize() > 0) {
@@ -201,6 +229,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 attachment.setLoaitep(fileType);
             }
 
+            // Cập nhật công việc
             String errorMessage = taskDAO.updateTask(task, hasReminder, reminderTime, attachment);
             if (errorMessage != null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -267,6 +296,35 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 reminderTime = Timestamp.valueOf(thoigiannhacnhoStr.replace("T", " ") + ":00");
             }
 
+            // Kiểm tra thời gian
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+            if (task.getNgayhethan() != null && task.getNgayhethan().before(currentTime)) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"success\": false, \"error\": \"Thời gian hết hạn phải sau thời gian hiện tại!\"}");
+                return;
+            }
+            if (reminderTime != null) {
+                if (reminderTime.after(task.getNgayhethan())) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải trước thời gian hết hạn!\"}");
+                    return;
+                }
+                if (reminderTime.before(currentTime)) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải sau thời gian hiện tại!\"}");
+                    return;
+                }
+                // Nếu trùng ngày với hiện tại, so sánh giờ
+                if (reminderTime.toLocalDateTime().toLocalDate().equals(currentTime.toLocalDateTime().toLocalDate())) {
+                    if (reminderTime.toLocalDateTime().toLocalTime().isBefore(currentTime.toLocalDateTime().toLocalTime())) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.getWriter().write("{\"success\": false, \"error\": \"Thời gian nhắc nhở phải lớn hơn hoặc bằng thời gian hiện tại khi cùng ngày!\"}");
+                        return;
+                    }
+                }
+            }
+
+            // Xử lý tệp đính kèm
             Attachment attachment = null;
             Part filePart = request.getPart("attachment");
             if (filePart != null && filePart.getSize() > 0) {
@@ -284,6 +342,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 attachment.setLoaitep(fileType);
             }
 
+            // Thêm công việc
             int newTaskId = taskDAO.addTask(task, hasReminder, reminderTime, attachment);
             response.getWriter().write("{\"success\": true, \"newTaskId\": " + newTaskId + ", \"message\": \"Thêm công việc thành công\"}");
         }
@@ -300,6 +359,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
         response.getWriter().write("{\"success\": false, \"error\": \"Lỗi không xác định: " + e.getMessage() + "\"}");
     }
 }
+
     private String extractFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         String[] items = contentDisp.split(";");

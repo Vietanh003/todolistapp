@@ -6,7 +6,7 @@ public class Category {
     private String ten;
     private String mausac;
 
-    // Getters và Setters
+    // Getter và Setter
     public int getMadanhmuc() {
         return madanhmuc;
     }
