@@ -18,7 +18,6 @@ public class NotificationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final NotificationDAO notificationDAO = new NotificationDAO();
 
-    // Lấy danh sách thông báo (GET)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");

@@ -75,4 +75,5 @@ public class User {
     public void setDuongDanAnhDaiDien(String duongDanAnhDaiDien) {
         this.duongDanAnhDaiDien = duongDanAnhDaiDien;
     }
+    
 }

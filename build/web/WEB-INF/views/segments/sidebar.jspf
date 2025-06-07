@@ -18,4 +18,7 @@
     <button class="btn btn-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">
         <i class="fas fa-plus me-2"></i> Thêm Công Việc
     </button>
+  <button class="btn btn-secondary w-100 mb-3" id="chatBtn" onclick="window.location.href='chat.jsp'">
+        <i class="fas fa-home"></i> Chat
+    </button>
 </div>

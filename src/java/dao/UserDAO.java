@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserDAO {
     // Phương thức đăng ký
@@ -115,6 +117,24 @@ public class UserDAO {
         }
     }
 }
+    // Phương thức lấy danh sách người dùng trừ người dùng hiện tại
+    public Map<Integer, String> getUsersExceptCurrent(int maNguoiDung) {
+        Map<Integer, String> users = new HashMap<>();
+        String sql = "{CALL GetUsersExceptCurrent(?)}";
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.setInt(1, maNguoiDung);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int userId = rs.getInt("MANGUOIDUNG");
+                String tenNguoiDung = rs.getString("TENNGUOIDUNG");
+                users.put(userId, tenNguoiDung);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
     // Phương thức đổi mật khẩu
     public OperationResult changeUserPassword(int maNguoiDung, String currentPassword, String newPassword) {
         String sql = "{CALL ChangeUserPassword(?, ?, ?, ?)}";
@@ -149,4 +169,22 @@ public class UserDAO {
             }
         }
     }
+    public Map<Integer, String> searchUsers(int currentUserId, String searchTerm) {
+    Map<Integer, String> users = new HashMap<>();
+    String sql = "{CALL SearchUsers(?, ?)}"; // Giả sử có stored procedure
+    try (Connection conn = DBConnection.getConnection();
+         CallableStatement stmt = conn.prepareCall(sql)) {
+        stmt.setInt(1, currentUserId);
+        stmt.setString(2, "%" + searchTerm + "%");
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            int userId = rs.getInt("MANGUOIDUNG");
+            String tenNguoiDung = rs.getString("TENNGUOIDUNG");
+            users.put(userId, tenNguoiDung);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return users;
+}
 }
